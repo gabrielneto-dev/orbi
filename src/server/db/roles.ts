@@ -3,11 +3,15 @@
  * - owner: dono das tabelas; usado só pelas migrações.
  * - app: conexões da aplicação; sem BYPASSRLS, nunca dono de objetos.
  * - platform: admin_plataforma; acesso restrito (tenants, primeiro gestor, auditoria da plataforma).
+ * - auth: só o módulo de autenticação (src/server/auth, Better Auth). Lê usuários e sessões de
+ *   todas as empresas para validar login e sessão, quando a empresa ainda não é conhecida
+ *   (CTX-DEC-20261105-auth-db-role).
  */
 export const DB_ROLES = {
   owner: "orbi_owner",
   app: "orbi_app",
   platform: "orbi_platform",
+  auth: "orbi_auth",
 } as const;
 
 export type DbRole = (typeof DB_ROLES)[keyof typeof DB_ROLES];

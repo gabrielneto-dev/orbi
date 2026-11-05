@@ -6,6 +6,25 @@ import prettier from "eslint-config-prettier/flat";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // Better Auth fica isolado em src/server/auth (plan.md › Risk analysis): o resto do código
+    // usa getSession()/createUserWithPassword() de "@/server/auth".
+    files: ["**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}"],
+    ignores: ["src/server/auth/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["better-auth", "better-auth/*", "@better-auth/*"],
+              message: 'Use "@/server/auth": só src/server/auth importa o Better Auth.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Desliga regras de estilo que conflitam com o Prettier (deve vir por último entre as configs).
   prettier,
   globalIgnores([

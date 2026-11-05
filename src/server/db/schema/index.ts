@@ -4,3 +4,4 @@
 // privilégios de `orbi_app` explicitamente. O teste `tests/integration/tenant-isolation.test.ts`
 // falha se alguma tabela com `tenant_id` ficar sem RLS.
 export * from "./tenants.ts";
+export * from "./auth.ts";

@@ -7,7 +7,7 @@ priority: high
 created_at: 2026-11-05
 updated_at: 2026-11-05
 dependencies: []
-context_refs: [CTX-QUE-20261104-project-purpose-and-scope, CTX-QUE-20261104-project-type-and-stack, CTX-DEC-20261105-tech-stack]
+context_refs: [CTX-QUE-20261104-project-purpose-and-scope, CTX-QUE-20261104-project-type-and-stack, CTX-DEC-20261105-tech-stack, CTX-DEC-20261105-auth-db-role]
 supersedes: null
 superseded_by: null
 ---
@@ -331,6 +331,7 @@ Módulos do MVP:
 - `CTX-QUE-20261104-project-purpose-and-scope` — esta spec contém a definição de propósito informada pelo usuário em 2026-11-05 (SaaS multiempresa para dedetizadoras); a question ainda não foi atualizada em `Context/` (aguarda `salvar contexto`).
 - `CTX-QUE-20261104-project-type-and-stack` — respondida por `CTX-DEC-20261105-tech-stack`.
 - `CTX-DEC-20261105-tech-stack` — stack usada no `plan.md`.
+- `CTX-DEC-20261105-auth-db-role` — papel `orbi_auth` e inatividade padrão de 8 h (REQ-049), aplicados no `plan.md`.
 
 ## Change Log
 

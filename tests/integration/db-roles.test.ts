@@ -45,7 +45,12 @@ describe("papéis PostgreSQL", () => {
          FROM pg_roles WHERE rolname = ANY($1) ORDER BY rolname`,
       [Object.values(DB_ROLES)],
     );
-    expect(rows.map((row) => row.rolname)).toEqual(["orbi_app", "orbi_owner", "orbi_platform"]);
+    expect(rows.map((row) => row.rolname)).toEqual([
+      "orbi_app",
+      "orbi_auth",
+      "orbi_owner",
+      "orbi_platform",
+    ]);
     for (const row of rows) {
       expect(row).toMatchObject({
         rolsuper: false,
@@ -57,7 +62,7 @@ describe("papéis PostgreSQL", () => {
     }
   });
 
-  it("orbi_app e orbi_platform não são donos de nenhum objeto da base", async () => {
+  it("orbi_app, orbi_platform e orbi_auth não são donos de nenhum objeto da base", async () => {
     const { rows } = await catalog.query(
       `SELECT kind, name FROM (
          SELECT 'relação' AS kind, relname::text AS name, relowner AS owner FROM pg_class
@@ -65,8 +70,8 @@ describe("papéis PostgreSQL", () => {
          UNION ALL SELECT 'função', proname::text, proowner FROM pg_proc
          UNION ALL SELECT 'tipo', typname::text, typowner FROM pg_type
        ) objects
-       WHERE pg_get_userbyid(owner) IN ($1, $2)`,
-      [DB_ROLES.app, DB_ROLES.platform],
+       WHERE pg_get_userbyid(owner) IN ($1, $2, $3)`,
+      [DB_ROLES.app, DB_ROLES.platform, DB_ROLES.auth],
     );
     expect(rows).toEqual([]);
   });

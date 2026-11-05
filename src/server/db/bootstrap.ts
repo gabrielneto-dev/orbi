@@ -7,6 +7,7 @@ export type BootstrapOptions = {
   ownerUrl: string;
   appUrl: string;
   platformUrl: string;
+  authUrl: string;
 };
 
 const ROLE_ATTRIBUTES = "LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS";
@@ -29,25 +30,27 @@ async function ensureRole(admin: pg.Client, info: ConnectionInfo): Promise<void>
 /**
  * Cria (ou corrige) os papéis e a base do orbi. Idempotente: pode rodar a cada deploy.
  * - Papéis com senha tirada das próprias URLs, todos sem BYPASSRLS.
- * - Base pertencente a orbi_owner; só orbi_app e orbi_platform recebem CONNECT.
+ * - Base pertencente a orbi_owner; só orbi_app, orbi_platform e orbi_auth recebem CONNECT.
  */
 export async function bootstrapDatabase(options: BootstrapOptions): Promise<{ database: string }> {
   const owner = parseConnectionUrl(options.ownerUrl);
   const app = parseConnectionUrl(options.appUrl);
   const platform = parseConnectionUrl(options.platformUrl);
+  const auth = parseConnectionUrl(options.authUrl);
   expectRole(owner, DB_ROLES.owner, "DATABASE_URL_OWNER");
   expectRole(app, DB_ROLES.app, "DATABASE_URL");
   expectRole(platform, DB_ROLES.platform, "DATABASE_URL_PLATFORM");
-  if (app.database !== owner.database || platform.database !== owner.database) {
+  expectRole(auth, DB_ROLES.auth, "DATABASE_URL_AUTH");
+  if ([app, platform, auth].some((role) => role.database !== owner.database)) {
     throw new Error(
-      "DATABASE_URL, DATABASE_URL_OWNER e DATABASE_URL_PLATFORM devem usar a mesma base",
+      "DATABASE_URL, DATABASE_URL_OWNER, DATABASE_URL_PLATFORM e DATABASE_URL_AUTH devem usar a mesma base",
     );
   }
 
   const admin = new pg.Client({ connectionString: options.adminUrl });
   await admin.connect();
   try {
-    for (const role of [owner, app, platform]) {
+    for (const role of [owner, app, platform, auth]) {
       await ensureRole(admin, role);
     }
 
@@ -63,9 +66,10 @@ export async function bootstrapDatabase(options: BootstrapOptions): Promise<{ da
     }
 
     await admin.query(`REVOKE ALL ON DATABASE ${database} FROM PUBLIC`);
-    await admin.query(
-      `GRANT CONNECT ON DATABASE ${database} TO ${admin.escapeIdentifier(DB_ROLES.app)}, ${admin.escapeIdentifier(DB_ROLES.platform)}`,
-    );
+    const connectRoles = [DB_ROLES.app, DB_ROLES.platform, DB_ROLES.auth]
+      .map((role) => admin.escapeIdentifier(role))
+      .join(", ");
+    await admin.query(`GRANT CONNECT ON DATABASE ${database} TO ${connectRoles}`);
     return { database: owner.database };
   } finally {
     await admin.end();

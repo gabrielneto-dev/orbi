@@ -16,6 +16,7 @@ export type TestDatabase = {
   ownerUrl: string;
   appUrl: string;
   platformUrl: string;
+  authUrl: string;
   /** Superusuário dentro da base temporária, para inspecionar o catálogo. */
   catalogUrl: string;
   drop: () => Promise<void>;
@@ -31,8 +32,9 @@ export async function createTestDatabase(): Promise<TestDatabase> {
   const ownerUrl = withDatabase(requireEnv("DATABASE_URL_OWNER"), database);
   const appUrl = withDatabase(requireEnv("DATABASE_URL"), database);
   const platformUrl = withDatabase(requireEnv("DATABASE_URL_PLATFORM"), database);
+  const authUrl = withDatabase(requireEnv("DATABASE_URL_AUTH"), database);
 
-  await bootstrapDatabase({ adminUrl, ownerUrl, appUrl, platformUrl });
+  await bootstrapDatabase({ adminUrl, ownerUrl, appUrl, platformUrl, authUrl });
   await runMigrations(ownerUrl);
 
   return {
@@ -41,6 +43,7 @@ export async function createTestDatabase(): Promise<TestDatabase> {
     ownerUrl,
     appUrl,
     platformUrl,
+    authUrl,
     catalogUrl: withDatabase(adminUrl, database),
     drop: async () => {
       const admin = new pg.Client({ connectionString: adminUrl });

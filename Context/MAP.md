@@ -12,6 +12,7 @@ Manual do sistema: `README.md`. Primeiro leia este arquivo e `STATE.md`.
 - Termos do domínio (OS, proposta, dispositivo, comprovante…) → `core/glossary.md`
 - Requisitos detalhados do MVP → `../Specs/features/SPEC-0001--pest-control-mvp/spec.md`
 - Stack e arquitetura → `CTX-DEC-20261105-tech-stack` + `plan.md` da SPEC-0001
+- Papéis do banco e login × RLS → `CTX-DEC-20261105-auth-db-role`
 
 ## Branches
 
@@ -35,7 +36,7 @@ Routes:
 
 ## Global (transversal)
 
-- Decisões → `global/decisions/` · ativas: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto), `CTX-DEC-20261105-adopt-spec-driven-development` (SDD), `CTX-DEC-20261105-product-scope-saas-pest-control` (escopo do produto), `CTX-DEC-20261105-tech-stack` (stack: Next.js + PostgreSQL em VPS)
+- Decisões → `global/decisions/` · ativas: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto), `CTX-DEC-20261105-adopt-spec-driven-development` (SDD), `CTX-DEC-20261105-product-scope-saas-pest-control` (escopo do produto), `CTX-DEC-20261105-tech-stack` (stack: Next.js + PostgreSQL em VPS), `CTX-DEC-20261105-auth-db-role` (papel `orbi_auth` para login; sessão expira após 8 h sem uso)
 - Perguntas → `global/questions/` · abertas: `rg -l "status: open" Context/` (nenhuma em 2026-11-05)
 - Assumptions → `global/assumptions/` · idioma do contexto: `CTX-ASM-20261104-context-language-pt-br`; conteúdo regulatório do comprovante: `CTX-ASM-20261105-regulatory-certificate-content`
 - Planos / riscos → `global/plans/`, `global/risks/` (vazios)

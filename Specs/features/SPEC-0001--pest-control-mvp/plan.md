@@ -125,15 +125,16 @@ docker/{Dockerfile, compose.dev.yml, compose.prod.yml, Caddyfile, backup/}
 
 ## Security and privacy
 
-- **Isolamento (REQ-061):** RLS `ENABLE` + `FORCE` em toda tabela com `tenant_id`, política `tenant_id = current_setting('app.tenant_id')::uuid`. Papéis PostgreSQL: `orbi_owner` (dono das tabelas, só migrações), `orbi_app` (aplicação, sem `BYPASSRLS`), `orbi_platform` (somente `tenants`, criação do primeiro gestor e `audit_log` da plataforma). Sem `app.tenant_id` definido, as consultas retornam zero linhas.
-- **Autenticação (REQ-001, 049):** Better Auth com e-mail/senha; hash scrypt (adaptativo, padrão da biblioteca); cookies `Secure`, `HttpOnly`, `SameSite=Lax`; expiração por inatividade configurável; rate limit de login. E-mail de login é único na plataforma (consequência de A-11).
+- **Isolamento (REQ-061):** RLS `ENABLE` + `FORCE` em toda tabela com `tenant_id`, política `tenant_id = current_setting('app.tenant_id')::uuid`. Papéis PostgreSQL: `orbi_owner` (dono das tabelas, só migrações), `orbi_app` (aplicação, sem `BYPASSRLS`), `orbi_platform` (somente `tenants`, criação do primeiro gestor e `audit_log` da plataforma), `orbi_auth` (só `src/server/auth`: lê usuários e sessões de todas as empresas, pois login e validação de sessão acontecem antes de se saber a empresa; `orbi_app` só lê usuários da própria empresa e não acessa sessões nem hashes de senha). Sem `app.tenant_id` definido, as consultas retornam zero linhas.
+  Changed 2026-11-05 (T008): acrescentado o papel `orbi_auth` — `CTX-DEC-20261105-auth-db-role`.
+- **Autenticação (REQ-001, 049):** Better Auth com e-mail/senha; hash scrypt (adaptativo, padrão da biblioteca); cookies `Secure`, `HttpOnly`, `SameSite=Lax`; expiração por inatividade configurável (`SESSION_IDLE_TIMEOUT_MINUTES`, padrão 8 h — `CTX-DEC-20261105-auth-db-role`); rate limit de login (5 tentativas/min por IP, contadores no banco). E-mail de login é único na plataforma (consequência de A-11).
 - **Autorização (BR-01):** matriz declarativa em `server/authz/policy.ts`, única fonte para servidor e UI; a UI só esconde, quem bloqueia é o servidor. Valores monetários removidos no serializador para `tecnico` (AC-031). Técnico só acessa OS/clientes das OS atribuídas a ele.
 - **admin_plataforma (REQ-062):** criado só por CLI (`scripts/create-platform-admin.ts`), nunca por seed com senha padrão; sem acesso a dados operacionais (usa `orbi_platform`).
 - **Arquivos:** bucket privado; URL pré-assinada curta; anexos `locked` não podem ser substituídos (REQ-052); validação de tipo/tamanho; nomes nunca derivados do usuário.
 - **PDF/Chromium:** sem execução de JS, sem acesso à rede (previne SSRF a partir de templates editados pelo gestor), processo no worker com limite de memória.
 - **Web:** HTTPS só via Caddy com HSTS; CSP restritiva; proteção CSRF/origem das Server Actions; cabeçalhos de segurança.
 - **LGPD (REQ-050, 060):** PII só nos perfis da BR-01; logs com redação de CPF/CNPJ/telefone/e-mail (pino `redact`); exportação JSON por titular; anonimização substitui PII em `clients`, `client_contacts`, `sites` e nome do assinante, mas mantém OS, aplicações e PDFs já emitidos por ≥ 5 anos (os PDFs congelam o conteúdo exigido).
-- **Segredos:** apenas variáveis de ambiente (`DATABASE_URL`, `DATABASE_URL_OWNER`, `DATABASE_URL_PLATFORM`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `BACKUP_S3_BUCKET`, `SENTRY_DSN`). `.env.example` só com nomes; `.env*` no `.gitignore`.
+- **Segredos:** apenas variáveis de ambiente (`DATABASE_URL`, `DATABASE_URL_OWNER`, `DATABASE_URL_PLATFORM`, `DATABASE_URL_AUTH`, `DATABASE_URL_ADMIN` só para bootstrap/testes, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `BACKUP_S3_BUCKET`, `SENTRY_DSN`). `.env.example` só com nomes; `.env*` no `.gitignore`.
 - **Dependências:** `pnpm audit` no CI e atualização automática (Dependabot).
 
 ## Compatibility and migrations
@@ -185,6 +186,7 @@ CI (GitHub Actions) em todo PR: lint, typecheck, unidade, integração (serviço
 ## Durable decisions
 
 - `CTX-DEC-20261105-tech-stack` — stack e isolamento por `tenant_id` + RLS (já registrado e em `context_refs`).
+- `CTX-DEC-20261105-auth-db-role` — papel `orbi_auth` para login/sessão e inatividade padrão de 8 h (decidido na T008, em `context_refs`).
 - Decisões deste plano que são locais à SPEC-0001 (não viram `DEC`): entrega em fases F0–F7, saldos materializados, geração síncrona de OS, upload via aplicação.
 
 ## Risk analysis
