@@ -15,7 +15,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "services:up": "docker compose --env-file .env -f docker/compose.dev.yml up -d --wait postgres minio && docker compose --env-file .env -f docker/compose.dev.yml up minio-init",
+    "services:down": "docker compose --env-file .env -f docker/compose.dev.yml down"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

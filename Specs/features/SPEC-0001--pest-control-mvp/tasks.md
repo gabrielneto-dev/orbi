@@ -31,22 +31,22 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: suporte (ferramentas de verificação) — os cinco scripts rodam com um teste de exemplo cada; `AGENTS.md` lista os comandos
   Evidence: 2026-11-05 — `pnpm lint` (ESLint 10.14 + eslint-config-next 16.4.5 + eslint-config-prettier, `--max-warnings=0`) exit 0; `pnpm format:check` (Prettier 3.9 + plugin Tailwind) exit 0; `pnpm typecheck` (`next typegen && tsc --noEmit`) exit 0; `pnpm test` (Vitest 5.1, projeto `unit`) 2/2 em `tests/unit/utils.test.ts`; `pnpm test:integration` (projeto `integration`) 1/1 em `tests/integration/home-page.test.tsx`; `pnpm test:e2e` (Playwright 1.64, projetos `desktop` e `mobile-360`) 4/4 com `next dev` e 4/4 com `CI=1` (build de produção). Lint conferido com arquivo temporário de violações (hooks, `any`, `<img>`, `key`, `<a>`): 8 problemas detectados. `AGENTS.md` › "Commands" lista os comandos. Notas: ESLint 10 escolhido porque o 9 está descontinuado; os plugins react/jsx-a11y/import declaram peer `eslint ≤ 9` (aviso do pnpm), mas as regras rodam — voltar para `eslint@^9` se algo quebrar. `agentRules: false` no `next.config.ts` impede o `next dev` de reescrever o `AGENTS.md`. Prettier com `endOfLine: auto` (git `core.autocrlf=true` no Windows). Integração ainda sem PostgreSQL (entra na T005/T006).
 
-- [ ] SPEC-0001-T003 — Criar `docker/compose.dev.yml` (PostgreSQL 17, MinIO), `.env.example` só com nomes de variáveis e entradas `.env*` no `.gitignore`
-  Status: ready
+- [x] SPEC-0001-T003 — Criar `docker/compose.dev.yml` (PostgreSQL 17, MinIO), `.env.example` só com nomes de variáveis e entradas `.env*` no `.gitignore`
+  Status: completed
   Requirements: none
   Depends on: SPEC-0001-T001
   Done when: suporte (ambiente local) — `docker compose -f docker/compose.dev.yml up` sobe banco e MinIO; nenhum valor de segredo versionado
-  Evidence:
+  Evidence: 2026-11-05 — Docker Desktop 4.98.0 (Engine 29.9.2, Compose v5.6.1, WSL 2). `pnpm services:up` (= `docker compose --env-file .env -f docker/compose.dev.yml up -d --wait` + `minio-init`) exit 0: `postgres` healthy (`select version()` → PostgreSQL 17.11, porta 127.0.0.1:5433 acessível do Windows), MinIO `GET :9000/minio/health/live` 200 e console `:9001` 200, bucket `orbi-dev` criado; segunda execução também exit 0 (idempotente). `.env.example` só com nomes (12 do plano + `POSTGRES_PASSWORD`, `POSTGRES_PORT`, `MINIO_API_PORT`, `MINIO_CONSOLE_PORT`); compose usa `${VAR:?}` sem nenhum valor fixo de senha; `git check-ignore` confirma `.env` ignorado e `.env.example` versionado. Notas: (1) o compose lê o `.env` da raiz só com `--env-file .env` (sem ele, falha com "defina … no .env" em vez de subir com senha vazia) — por isso os scripts `services:up`/`services:down`; (2) porta padrão do PostgreSQL 5433, pois a máquina já tem um PostgreSQL nativo na 5432; (3) a MinIO deixou de publicar imagens comunitárias (Docker Hub e quay.io sem acesso); usada `cgr.dev/chainguard/minio` (compilada do código-fonte, RELEASE.2026-10-23) e `cgr.dev/chainguard/minio-client`, só com a tag `latest` no plano gratuito. Comandos em `AGENTS.md` › "Commands".
 
 - [ ] SPEC-0001-T004 — Criar CI no GitHub Actions: lint, typecheck, unidade, integração (serviço PostgreSQL), E2E e `pnpm audit`
-  Status: pending
+  Status: ready
   Requirements: none
   Depends on: SPEC-0001-T002, SPEC-0001-T003
   Done when: suporte (verificação contínua) — um PR de teste executa todos os jobs com sucesso
   Evidence:
 
 - [ ] SPEC-0001-T005 — Configurar Drizzle, migrações e os papéis PostgreSQL `orbi_owner`, `orbi_app` (sem BYPASSRLS) e `orbi_platform`, com script `db:migrate`
-  Status: pending
+  Status: ready
   Requirements: REQ-061
   Depends on: SPEC-0001-T003
   Done when: migração inicial aplica num banco vazio; `orbi_app` não é dono de tabelas nem tem BYPASSRLS (verificado por consulta em teste)

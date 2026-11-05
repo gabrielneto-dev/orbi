@@ -125,6 +125,10 @@ Toolchain: Node 24 LTS (`.node-version`) and pnpm (version pinned in `package.js
 | Unit tests (Vitest, `tests/unit`, `src/**/*.test.ts`) | `pnpm test` |
 | Integration tests (Vitest, `tests/integration`) | `pnpm test:integration` |
 | E2E tests (Playwright, desktop + 360 px) | `pnpm test:e2e` (first time: `pnpm exec playwright install chromium`) |
+| Start local PostgreSQL 17 (port 5433) + MinIO (9000/9001) and create the bucket | `pnpm services:up` |
+| Stop local services (data kept in Docker volumes) | `pnpm services:down` |
+
+Local services need Docker Desktop running and a `.env` at the repository root, copied from `.env.example` and filled in (never commit `.env`). `docker compose` must receive `--env-file .env`; the `services:*` scripts already do that.
 
 Before declaring a task done, run `pnpm lint`, `pnpm format:check`, `pnpm typecheck` and the test scripts it affects.
 
