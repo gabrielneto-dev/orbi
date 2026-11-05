@@ -1,7 +1,7 @@
 # SDD State
 
 Last updated: 2026-11-05
-Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T008)
+Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T009)
 
 ## Active spec
 
@@ -9,18 +9,19 @@ Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warni
 
 ## Phase
 
-`in_progress` — fase F0 (Fundação). Concluídas: `SPEC-0001-T001` (scaffold Next.js), `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright), `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO), `SPEC-0001-T005` (Drizzle, migrações, papéis do banco), `SPEC-0001-T006` (`tenants`, `withTenant()`, RLS padrão, varredura), `SPEC-0001-T007` (`src/lib`: pt-BR, fuso, CPF/CNPJ) e `SPEC-0001-T008` (Better Auth, papel `orbi_auth`). Comandos do projeto em `AGENTS.md` › "Commands".
+`in_progress` — fase F0 (Fundação). Concluídas: `SPEC-0001-T001` (scaffold Next.js), `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright), `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO), `SPEC-0001-T005` (Drizzle, migrações, papéis do banco), `SPEC-0001-T006` (`tenants`, `withTenant()`, RLS padrão, varredura), `SPEC-0001-T007` (`src/lib`: pt-BR, fuso, CPF/CNPJ) , `SPEC-0001-T008` (Better Auth, papel `orbi_auth`) e `SPEC-0001-T009` (`RequestContext`, `action()`/`handler()`, resultado padronizado). Comandos do projeto em `AGENTS.md` › "Commands".
 
 ## Current / next task
 
-`SPEC-0001-T009` — `RequestContext` + wrappers `action()`/`handler()` (`ready`; T006 e T008 concluídas). Caminho crítico da F0: T009 → T010/T011…
-Também `ready`: `SPEC-0001-T004` (CI), `SPEC-0001-T012` (`audit_log`), `SPEC-0001-T037` (`doc_sequences`), `SPEC-0001-T038` (worker pg-boss) e `SPEC-0001-T047` (`expandRecurrence`).
+`SPEC-0001-T010` — regra de lint que exige `action()`/`handler()` (`ready`); pequena e protege tudo o que vier depois. Caminho crítico da F0: T011 (BR-01) e T012 (auditoria) → T015/T016 → T018; T010, T013, T014 e T017 também precisam fechar antes da T018.
+Também `ready`: `SPEC-0001-T011` (BR-01), `SPEC-0001-T013` (concorrência), `SPEC-0001-T014` (arquivos S3), `SPEC-0001-T017` (login e shells), `SPEC-0001-T004` (CI), `SPEC-0001-T012` (`audit_log`), `SPEC-0001-T037` (`doc_sequences`), `SPEC-0001-T038` (worker pg-boss) e `SPEC-0001-T047` (`expandRecurrence`).
 Regra para toda tabela nova com `tenant_id`: na migração, `CALL public.enable_tenant_rls('public.<tabela>')` + GRANT explícito a `orbi_app`; a varredura em `tests/integration/tenant-isolation.test.ts` falha se faltar.
 Atenção na T004: o `Done when` fala em "um PR de teste", mas o fluxo do projeto não usa PRs (tudo direto na `main`, decisão de 2026-11-05) — ajustar o critério para "um push na `main`" com o usuário antes de concluir. O CI vai precisar rodar `db:bootstrap` + `db:migrate` com `DATABASE_URL_ADMIN` antes dos testes de integração, e definir `DATABASE_URL_AUTH`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL`.
 Para a T017 (tela de login): o rate limit do Better Auth só vale em requisições HTTP a `/api/auth/*`; login por Server Action com `auth.api` não passaria por ele (ver Evidence da T008).
 
 ## Recently completed
 
+- 2026-11-05: `SPEC-0001-T009` — `src/server/{result,context}.ts` e `src/lib/validation.ts` (Zod pt-BR): `RequestContext`, `action()`/`handler()` com sessão, bloqueio de usuário inativo, `admin_plataforma` e empresa suspensa a cada requisição, validação → 422 e erros 401/403/404/409; `tests/integration/request-context.test.ts` 15/15 + smoke no `next dev`. T010, T011, T013, T014 e T017 passaram a `ready`.
 - 2026-11-05: `SPEC-0001-T008` — Better Auth 1.7.17 em `src/server/auth` (e-mail/senha scrypt, cookies HttpOnly/Secure/Lax, inatividade padrão 8 h via `SESSION_IDLE_TIMEOUT_MINUTES`, rate limit 5/min por IP, inativo não entra); papel `orbi_auth` (`CTX-DEC-20261105-auth-db-role`, decisão do usuário) e migrações 0003/0004; lint impede importar a biblioteca fora do módulo; `tests/integration/auth.test.ts` 17/17. T009 passou a `ready`.
 - 2026-11-05: `SPEC-0001-T006` — `tenants` (migração 0001) + `drizzle/0002_tenant_rls.sql` (`current_tenant_id()`, `enable_tenant_rls()`, RLS forçado em `tenants`, grants de `orbi_app`/`orbi_platform`); `src/server/db/{client,tenant}.ts` com `getDb()` e `withTenant()`; `tests/integration/tenant-isolation.test.ts` 14/14 (isolamento entre duas empresas numa tabela de exemplo, zero linhas sem empresa, varredura de RLS com provas negativas). T012 e T037 passaram a `ready`.
 - 2026-11-05: `SPEC-0001-T005` — Drizzle + `pg`; papéis criados por `pnpm db:bootstrap` (superusuário, idempotente) e migrações por `pnpm db:migrate` (só `orbi_owner`); migração inicial com `uuid_generate_v7()`; teste de integração 8/8 numa base vazia temporária. `package.json` agora `"type": "module"`.
@@ -40,7 +41,7 @@ Para a T017 (tela de login): o rate limit do Better Auth só vale em requisiçõ
 
 ## Last verification
 
-2026-11-05, após a T008: `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm build` exit 0; `pnpm test` 43/43; `pnpm test:integration` 40/40 (bases temporárias migradas: 8 de papéis/migrações, 14 de isolamento/RLS, 17 de autenticação, 1 da página); `pnpm test:e2e` 4/4; `pnpm audit --prod` sem vulnerabilidades; `pnpm db:bootstrap` + `pnpm db:migrate` na base de dev exit 0; smoke da rota `/api/auth` no `next dev` OK. Nenhum AC completo verificado (V-005, V-033, V-037 parciais, anotados em `verification.md`). `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
+2026-11-05, após a T009: `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm build` exit 0; `pnpm test` 47/47; `pnpm test:integration` 55/55 (8 papéis/migrações, 14 isolamento/RLS, 17 autenticação, 15 contexto/wrappers, 1 página); `pnpm test:e2e` 4/4; `pnpm audit --prod` limpo; smoke dos wrappers padrão no `next dev` OK. Nenhum AC completo verificado (V-005, V-033, V-037 parciais, anotados em `verification.md`). `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
 
 ## Relevant files
 
@@ -51,11 +52,12 @@ Para a T017 (tela de login): o rate limit do Better Auth só vale em requisiçõ
 - Código: `package.json`, `next.config.ts`, `tsconfig.json`, `components.json`, `src/app/`, `src/components/ui/`
 - Banco: `drizzle.config.ts`, `drizzle/`, `src/server/db/`, `scripts/db-*.mts`
 - Autenticação: `src/server/auth/`, `src/app/api/auth/[...all]/route.ts`
+- Requisições: `src/server/context.ts`, `src/server/result.ts`, `src/lib/validation.ts`
 - Ferramentas: `eslint.config.mjs`, `.prettierrc.json`, `vitest.config.mts`, `playwright.config.ts`, `tests/`
 
 ## Next recommended action
 
-1. `SPEC-0001-T009` (`RequestContext` + `action()`/`handler()`). Antes, `pnpm services:up` com o Docker Desktop aberto; quem tiver um `.env` antigo precisa acrescentar `DATABASE_URL_AUTH`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL` e rodar `pnpm db:bootstrap`.
+1. `SPEC-0001-T010` (lint dos wrappers, com exceção para `/api/auth/[...all]` e modo público para `/api/health`), depois T011. Antes, `pnpm services:up` com o Docker Desktop aberto; quem tiver um `.env` antigo precisa acrescentar `DATABASE_URL_AUTH`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL` e rodar `pnpm db:bootstrap`.
 2. Usuário envia os modelos de proposta e contrato (OQ-06) para desbloquear T045/T056.
 
 ## Context to load

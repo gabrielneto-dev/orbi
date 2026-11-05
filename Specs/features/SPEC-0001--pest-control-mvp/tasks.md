@@ -73,22 +73,22 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: login/logout funcionam; senha só armazenada como hash; sessão expira após o tempo configurado (teste); só `src/server/auth` importa a biblioteca
   Evidence: 2026-11-05 — Decisão do usuário antes de implementar (conflito login × RLS em `users`): papel `orbi_auth` exclusivo do módulo de autenticação e inatividade padrão de 8 h → `CTX-DEC-20261105-auth-db-role` (refletida em `plan.md` › Security and privacy e em `context_refs`). better-auth 1.7.17 fixada (a 1.7.18, publicada no mesmo dia, foi recusada pela política `minimumReleaseAge` do pnpm; não abri exceção). Bootstrap cria/corrige `orbi_auth` (`DATABASE_URL_AUTH`); `src/server/db/schema/auth.ts` → `drizzle/0003_auth.sql` (`users` com `tenant_id` nulo só para `admin_plataforma`, `roles text[]`, `active`, e-mail único; `sessions`, `accounts`, `verifications`, `rate_limits`); `drizzle/0004_auth_access.sql`: `users` com `enable_tenant_rls` + política `auth_access` só para `orbi_auth`, `orbi_app` só SELECT; demais tabelas só para `orbi_auth` (RLS forçado, política só dele); `orbi_auth` sem DELETE em `users`. `src/server/auth/{config,auth,module,index}.ts`: e-mail/senha com scrypt (padrão), cadastro público desligado, cookies HttpOnly + SameSite=Lax + Secure (https ou produção), sessão `expiresIn` = inatividade e `updateAge` ≤ 15 min, sem cache de sessão em cookie, rate limit 5/min por IP em `/sign-in/email` gravado no banco, telemetria desligada, hook que recusa login de usuário inativo (403 `USER_INACTIVE`), IDs pelo banco (UUID v7); API própria `getSession()`, `createUserWithPassword()`, `authRouteHandlers` em `src/app/api/auth/[...all]/route.ts`. ESLint `no-restricted-imports` proíbe `better-auth`/`@better-auth/*` fora de `src/server/auth` (arquivo de prova em `src/lib`: 2 erros; dentro de `src/server/auth`: 0). `pnpm test:integration` › `tests/integration/auth.test.ts` 17/17 (HTTP pelo handler, baseURL https): login devolve sessão com empresa/perfis; cookie HttpOnly/Secure/SameSite=Lax; senha errada/e-mail inexistente → 401 sem cookie; logout apaga a sessão; token inventado → sem sessão; inativo → 403 e nenhuma sessão; sign-up público recusado; senha só como `salt:hash` scrypt, salts distintos, nenhuma coluna de senha em `users`; inatividade: uso a cada 7 h mantém a sessão por 14 h, 8 h 01 sem uso → expirada (relógio simulado); 6ª tentativa no mesmo minuto/IP → 429, outro IP passa; `orbi_app` sem acesso a sessões/contas/verificações/rate limit (42501), vê só usuários da própria empresa e não grava; `createUserWithPassword` valida perfil × empresa, senha, e-mail, e-mail único sem diferenciar maiúsculas (23505); `admin_plataforma` sem empresa entra. `pnpm test` › `tests/unit/auth-config.test.ts` 5/5 (padrão 480 min, limites 5 min–7 dias). Varredura de RLS continua passando com `users`. Smoke no `next dev` (rota real `/api/auth`, base de dev, usuário temporário removido depois): senha errada 401, login 200, `get-session` com empresa e perfil, logout 200, sessão nula depois. `pnpm db:bootstrap` + `db:migrate` na base de dev exit 0; `drizzle-kit generate` sem mudanças; `lint`, `format:check`, `typecheck`, `build` exit 0; `test` 43/43; `test:integration` 40/40; `test:e2e` 4/4; `pnpm audit --prod` sem vulnerabilidades. Notas: (1) o rate limit só vale para requisições HTTP em `/api/auth/*` — chamadas `auth.api.*` em Server Actions não passam por ele, então a tela de login (T017) deve postar para `/api/auth/sign-in/email` ou aplicar limite próprio; (2) o IP vem de `X-Forwarded-For`: em produção o Caddy precisa sobrescrever esse cabeçalho (T083), senão todos os clientes caem no mesmo contador; (3) empresa suspensa ainda não bloqueia login aqui — fica no `RequestContext` (T009), que lê `tenants.status` com `withTenant`.
 
-- [ ] SPEC-0001-T009 — Implementar `RequestContext` e os wrappers `action()`/`handler()`: sessão, bloqueio de usuário inativo e empresa suspensa, `withTenant`, e o resultado padronizado (401/403/404/409/422)
-  Status: ready
+- [x] SPEC-0001-T009 — Implementar `RequestContext` e os wrappers `action()`/`handler()`: sessão, bloqueio de usuário inativo e empresa suspensa, `withTenant`, e o resultado padronizado (401/403/404/409/422)
+  Status: completed
   Requirements: REQ-001, REQ-003, REQ-049, REQ-063
   Depends on: SPEC-0001-T006, SPEC-0001-T008
   Done when: testes de integração: sem sessão → 401; usuário inativo → negado; empresa suspensa → negado; erro de validação → 422
-  Evidence:
+  Evidence: 2026-11-05 — `src/server/result.ts`: `ActionResult<T>` = `{ ok: true, data } | { ok: false, code, message, fields? }`, `ERROR_STATUS` (UNAUTHENTICATED 401, FORBIDDEN 403, NOT_FOUND 404, CONFLICT 409, VALIDATION 422), `AppError` + atalhos (`notFound()`, `conflict()`…) com mensagens padrão em pt-BR, `fieldErrorsFromZod`. `src/lib/validation.ts`: `z` com locale pt-BR do Zod (zod 4.6.7 adicionado como dependência direta, fora da janela `minimumReleaseAge`). `src/server/context.ts`: `buildRequestContext` (sem sessão → UNAUTHENTICATED; usuário inativo, `admin_plataforma`/sem empresa ou empresa não `active` → FORBIDDEN; situação do usuário e da empresa lida a cada requisição, empresa via `withTenant` + `orbi_app`), `RequestContext { user, tenantId, roles, withTenant(fn) }`, `createWrappers(deps)` → `action({ input? }, fn)` (autentica antes de validar; devolve `ActionResult`) e `handler({ body? }, fn)` (JSON com o status do código, `params` do Next 16 como Promise, `Response` devolvido sai como está, JSON malformado → 422); erros que não são `AppError` sobem (inclui `redirect`/`notFound` do Next). Exporta `action`/`handler` padrão (sessão do Better Auth + `getDb()`). `pnpm test:integration` › `tests/integration/request-context.test.ts` 15/15: action sem sessão → UNAUTHENTICATED sem executar nem validar; sessão válida → contexto da empresa e `ctx.withTenant` só enxerga a própria empresa; entrada inválida → VALIDATION com campo e mensagem pt-BR; usuário desativado depois do login → FORBIDDEN; empresa suspensa → FORBIDDEN e, reativada, volta a funcionar (REQ-063); `admin_plataforma` → FORBIDDEN; após logout → UNAUTHENTICATED; `AppError` vira resultado e erro inesperado sobe; handler: 401, 200 com params/corpo, 422 (corpo inválido e JSON malformado), 404, 409, 403 (suspensa), `Response` de redirect preservado, erro inesperado sobe. `pnpm test` › `tests/unit/result.test.ts` 4/4. Smoke no `next dev` com os wrappers padrão (rota e página temporárias com Server Action, removidas depois; empresa/usuário temporários apagados): rota sem cookie 401, com cookie 200; Server Action via `next/headers` sem cookie UNAUTHENTICATED, com cookie ok, entrada inválida VALIDATION em pt-BR; empresa suspensa → 403/FORBIDDEN nas duas; sem erros no log. `lint`, `format:check`, `typecheck`, `build` exit 0; `test` 47/47; `test:integration` 55/55; `test:e2e` 4/4; `pnpm audit --prod` limpo. Notas: (1) sem modo público no `handler()` ainda — `/api/health` (e a exceção para `/api/auth/[...all]`) entram com a regra de lint da T010; (2) o módulo da plataforma (T015) precisará de um contexto próprio para `admin_plataforma`; (3) entrada de Server Action chega como objeto; formulários com `FormData` ficam para as telas (T017).
 
 - [ ] SPEC-0001-T010 — Criar regra de lint que proíbe Server Action ou route handler fora de `action()`/`handler()`
-  Status: pending
+  Status: ready
   Requirements: REQ-049
   Depends on: SPEC-0001-T009
   Done when: lint falha num arquivo de exemplo sem wrapper e passa com wrapper; regra ativa no CI
   Evidence:
 
 - [ ] SPEC-0001-T011 — Implementar a matriz BR-01 em `src/server/authz/policy.ts` e serializadores por perfil (valores monetários removidos para `tecnico`)
-  Status: pending
+  Status: ready
   Requirements: REQ-002
   Depends on: SPEC-0001-T009
   Done when: testes unitários percorrem cada linha da BR-01 para cada perfil; serializador do técnico não contém campos monetários
@@ -102,14 +102,14 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence:
 
 - [ ] SPEC-0001-T013 — Implementar controle otimista de concorrência (`version` + atualização condicional → 409) e o aviso de conflito na UI
-  Status: pending
+  Status: ready
   Requirements: REQ-054
   Depends on: SPEC-0001-T009
   Done when: teste de integração com duas gravações concorrentes da mesma versão: a segunda recebe CONFLICT e nada é sobrescrito
   Evidence:
 
 - [ ] SPEC-0001-T014 — Implementar armazenamento S3: `POST /api/files` (tipo por assinatura de bytes, limite 15 MB), `GET /api/files/:id` com URL pré-assinada de 5 min, chaves `t/<tenant_id>/…` e `files.locked`
-  Status: pending
+  Status: ready
   Requirements: REQ-052, REQ-061
   Depends on: SPEC-0001-T009
   Done when: testes: upload válido grava no MinIO; arquivo de outra empresa → 404; tipo falso recusado; arquivo `locked` não pode ser substituído
@@ -130,7 +130,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence:
 
 - [ ] SPEC-0001-T017 — Criar tela de login, shell do escritório (desktop) e shell de campo (mobile-first) com redirecionamentos por perfil
-  Status: pending
+  Status: ready
   Requirements: REQ-001, REQ-048
   Depends on: SPEC-0001-T009
   Done when: visitante é redirecionado ao login; técnico cai no shell de campo; shell de campo sem rolagem horizontal em 360 px (Playwright)
