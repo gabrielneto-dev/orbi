@@ -2,8 +2,8 @@
 id: CTX-DEC-20261105-auth-db-role
 type: decision
 title: Papel PostgreSQL orbi_auth exclusivo do módulo de autenticação; sessão expira após 8 h sem uso
-branch: global
-tags: [tech-stack]
+branch: backend
+tags: [database, authentication, security]
 status: active
 confidence: high
 created_at: 2026-11-05

@@ -17,6 +17,13 @@ Não é log de conversa.
 
 - `_meta/tools/context_check.py`: o campo `path` do catálogo passa a usar `/` em qualquer SO (`as_posix()`); no Windows o catálogo era regravado com `\` e acusava "out of date" sem mudança real.
 
+## 2026-11-05 — Primeiras branches de domínio: backend e infra
+
+- Criadas `branches/backend/` (banco, RLS, autenticação) e `branches/infra/` (ambiente local, dependências), com `_index.md`. Motivo: a implementação da SPEC-0001 (T001–T008) produziu conhecimento específico de área.
+- `CTX-DEC-20261105-auth-db-role` movida de `global/decisions/` para `branches/backend/decisions/` (ID mantido; `branch: backend`).
+- Taxonomia: branches `backend` e `infra`; novo grupo de tags `engineering` (`database`, `multi-tenancy`, `security`, `authentication`, `dev-environment`, `docker`, `dependencies`).
+- `MAP.md`: rotas das duas branches.
+
 ## 2026-11-05 — Integração com Spec-Driven Development
 
 - Instalado `Specs/` (protocolo SDD adaptativo, `INDEX`, `STATE`, templates, `sdd_check.py`). Decisão: `CTX-DEC-20261105-adopt-spec-driven-development`.

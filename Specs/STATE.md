@@ -57,7 +57,6 @@ Para a T017 (tela de login): o rate limit do Better Auth só vale em requisiçõ
 
 1. `SPEC-0001-T009` (`RequestContext` + `action()`/`handler()`). Antes, `pnpm services:up` com o Docker Desktop aberto; quem tiver um `.env` antigo precisa acrescentar `DATABASE_URL_AUTH`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL` e rodar `pnpm db:bootstrap`.
 2. Usuário envia os modelos de proposta e contrato (OQ-06) para desbloquear T045/T056.
-3. Pedir `salvar contexto` para atualizar `Context/STATE.md` (ainda diz "nenhum código").
 
 ## Context to load
 

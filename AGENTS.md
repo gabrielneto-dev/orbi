@@ -135,6 +135,8 @@ Local services need Docker Desktop running and a `.env` at the repository root, 
 
 Before declaring a task done, run `pnpm lint`, `pnpm format:check`, `pnpm typecheck` and the test scripts it affects.
 
+Dependencies: after `pnpm add`, check `git diff pnpm-workspace.yaml` and never commit a `minimumReleaseAgeExclude` entry. If pnpm rejects a version as too recent, pin the previous release instead (see `CTX-NTE-20261105-pnpm-minimum-release-age`).
+
 Next.js 16 differs from older versions in APIs and conventions: check the bundled docs in `node_modules/next/dist/docs/` before writing framework code, and heed deprecation notices.
 
 # Git workflow

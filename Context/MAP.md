@@ -12,20 +12,26 @@ Manual do sistema: `README.md`. Primeiro leia este arquivo e `STATE.md`.
 - Termos do domínio (OS, proposta, dispositivo, comprovante…) → `core/glossary.md`
 - Requisitos detalhados do MVP → `../Specs/features/SPEC-0001--pest-control-mvp/spec.md`
 - Stack e arquitetura → `CTX-DEC-20261105-tech-stack` + `plan.md` da SPEC-0001
-- Papéis do banco e login × RLS → `CTX-DEC-20261105-auth-db-role`
 
 ## Branches
 
-Nenhuma branch de domínio ainda (ver `branches/README.md`): não há código nem conhecimento específico de área. Quando criadas, liste aqui:
-
-```text
-### <Nome>
-Path: branches/<branch>/
+### Backend
+Path: branches/backend/
 Status: active
-Primary tags: ...
+Primary tags: database, multi-tenancy, authentication, security
 Routes:
-- <assunto> → branches/<branch>/_index.md
-```
+- Papéis do banco, RLS, `withTenant()`, como criar tabela de empresa → `branches/backend/_index.md` › `CTX-FCT-20261105-tenant-isolation-model`
+- Login, sessão, cookies, criação de usuários (Better Auth) → `CTX-FCT-20261105-auth-module`
+- Login × RLS, papel `orbi_auth`, inatividade de 8 h → `CTX-DEC-20261105-auth-db-role`
+- Cuidados com rate limit na tela de login e no deploy → `CTX-RSK-20261105-login-rate-limit-bypass`
+
+### Infra
+Path: branches/infra/
+Status: active
+Primary tags: dev-environment, docker, dependencies
+Routes:
+- Ambiente local (Docker, portas, `.env`, Python dos validadores) → `branches/infra/_index.md` › `CTX-FCT-20261105-local-dev-environment`
+- Versão de pacote recusada pelo pnpm (`minimumReleaseAge`) → `CTX-NTE-20261105-pnpm-minimum-release-age`
 
 ## Desenvolvimento (SDD)
 
@@ -36,10 +42,10 @@ Routes:
 
 ## Global (transversal)
 
-- Decisões → `global/decisions/` · ativas: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto), `CTX-DEC-20261105-adopt-spec-driven-development` (SDD), `CTX-DEC-20261105-product-scope-saas-pest-control` (escopo do produto), `CTX-DEC-20261105-tech-stack` (stack: Next.js + PostgreSQL em VPS), `CTX-DEC-20261105-auth-db-role` (papel `orbi_auth` para login; sessão expira após 8 h sem uso)
+- Decisões → `global/decisions/` · ativas: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto), `CTX-DEC-20261105-adopt-spec-driven-development` (SDD), `CTX-DEC-20261105-product-scope-saas-pest-control` (escopo do produto), `CTX-DEC-20261105-tech-stack` (stack: Next.js + PostgreSQL em VPS); por branch: `CTX-DEC-20261105-auth-db-role` (backend)
 - Perguntas → `global/questions/` · abertas: `rg -l "status: open" Context/` (nenhuma em 2026-11-05)
 - Assumptions → `global/assumptions/` · idioma do contexto: `CTX-ASM-20261104-context-language-pt-br`; conteúdo regulatório do comprovante: `CTX-ASM-20261105-regulatory-certificate-content`
-- Planos / riscos → `global/plans/`, `global/risks/` (vazios)
+- Planos / riscos → `global/plans/`, `global/risks/` (vazios); riscos de área ficam nas branches (`rg "type: risk" Context/branches/`)
 
 ## Histórico e evidência
 

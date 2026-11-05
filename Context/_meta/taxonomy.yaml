@@ -1,7 +1,7 @@
 version: 1
 
 # Domain: SaaS for pest control companies (CTX-DEC-20261105-product-scope-saas-pest-control).
-# Add domain branches once implementation produces area-specific knowledge.
+# Domain branches: backend (server, database, auth) and infra (environment, dependencies, deploy).
 
 types:
   FCT: fact
@@ -21,6 +21,8 @@ types:
 branches:
   - core
   - global
+  - backend
+  - infra
 
 # Canonical tags, grouped. Only leaf values (and group names) are valid tags.
 canonical_tags:
@@ -41,6 +43,14 @@ canonical_tags:
     - product
     - regulatory
     - tech-stack
+  engineering:
+    - database
+    - multi-tenancy
+    - security
+    - authentication
+    - dev-environment
+    - docker
+    - dependencies
 
 statuses:
   - active
