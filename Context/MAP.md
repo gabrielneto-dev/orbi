@@ -24,9 +24,16 @@ Routes:
 - <assunto> → branches/<branch>/_index.md
 ```
 
+## Desenvolvimento (SDD)
+
+- Protocolo SDD → `../Specs/README.md`
+- Specs existentes, status, próximo ID → `../Specs/INDEX.md`
+- Spec ativa, fase, próxima tarefa, bloqueios → `../Specs/STATE.md`
+- Decisão de adoção → `CTX-DEC-20261105-adopt-spec-driven-development`
+
 ## Global (transversal)
 
-- Decisões → `global/decisions/` · ativa: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto)
+- Decisões → `global/decisions/` · ativas: `CTX-DEC-20261104-adopt-context-engineering` (sistema de contexto), `CTX-DEC-20261105-adopt-spec-driven-development` (SDD)
 - Perguntas abertas → `global/questions/` · `rg -l "status: open" Context/`
 - Assumptions → `global/assumptions/` · idioma do contexto: `CTX-ASM-20261104-context-language-pt-br`
 - Planos / riscos → `global/plans/`, `global/risks/` (vazios)

@@ -30,6 +30,7 @@ canonical_tags:
     - documentation
     - language
     - session
+    - spec-driven-development
   project:
     - overview
     - goals

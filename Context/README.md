@@ -51,6 +51,7 @@ Uma branch contém, conforme necessário:
 | Conhecimento transversal | `global/**` |
 | Continuidade de sessões | `checkpoints/*.md` |
 | Evidência | `sources/**` |
+| Especificações, planos, tarefas, verificação e estado do desenvolvimento | `Specs/` (protocolo em `Specs/README.md`) |
 
 Os arquivos Markdown são canônicos. `_meta/catalog.jsonl` é derivado: se divergir, **reconstrua o catálogo**.
 
@@ -159,6 +160,8 @@ Gatilhos (reconheça a intenção, não a string exata): `salvar contexto`, `sal
 
 Fora de um gatilho, só escreva em `Context/` quando o próprio pedido do usuário for sobre o contexto (ex.: "registre esta decisão").
 
+Exceção do SDD: uma decisão durável tomada no planejamento de uma spec é registrada como `DEC` aqui e referenciada em `context_refs` da spec (`Specs/README.md` §9.1). A persistência automática do SDD grava apenas em `Specs/`; ela não autoriza outras escritas em `Context/`.
+
 ## 10. Context Save Protocol (`salvar contexto`)
 
 Não é um resumo da conversa. É uma reconstrução semântica da sessão.
@@ -168,6 +171,7 @@ Não é um resumo da conversa. É uma reconstrução semântica da sessão.
 ```text
 SESSION
  → INSPECT PROJECT CHANGES   (git status / git diff / git log — evidência > lembrança)
+ → INSPECT SDD STATE         (Specs/STATE.md, INDEX.md — referenciar no checkpoint, não copiar specs)
  → ANALYZE                   (objetivo, tarefas, problemas, causas, tentativas, falhas,
                               soluções, decisões e motivos, arquivos, testes, resultados,
                               fatos, assumptions, perguntas abertas/respondidas, riscos,
