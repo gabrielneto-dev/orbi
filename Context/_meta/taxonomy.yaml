@@ -1,0 +1,61 @@
+version: 1
+
+# Domain is still undefined (CTX-QUE-20261104-project-purpose-and-scope).
+# Add domain tags and branches once the project's purpose is known.
+
+types:
+  FCT: fact
+  RES: research
+  DEC: decision
+  ASM: assumption
+  QUE: question
+  PLN: plan
+  RSK: risk
+  NTE: note
+  SRC: source
+  SUM: summary
+  EXP: experiment
+  CP: checkpoint
+
+# Valid values for the `branch` field. `core` and `global` are reserved.
+branches:
+  - core
+  - global
+
+# Canonical tags, grouped. Only leaf values (and group names) are valid tags.
+canonical_tags:
+  meta:
+    - context-engineering
+    - agents
+    - documentation
+    - language
+    - session
+  project:
+    - overview
+    - goals
+    - constraints
+    - glossary
+    - scope
+    - domain
+    - tech-stack
+
+statuses:
+  - active
+  - open
+  - answered
+  - candidate
+  - planned
+  - in-progress
+  - completed
+  - cancelled
+  - experimental
+  - blocked
+  - superseded
+  - deprecated
+  - archived
+
+confidence:
+  - low
+  - medium
+  - high
+  - verified
