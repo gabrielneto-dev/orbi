@@ -1,7 +1,7 @@
 # SDD State
 
 Last updated: 2026-11-05
-Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T002)
+Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T007)
 
 ## Active spec
 
@@ -9,15 +9,16 @@ Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warni
 
 ## Phase
 
-`in_progress` — fase F0 (Fundação). `SPEC-0001-T001` (scaffold Next.js) e `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright) concluídas. Comandos do projeto em `AGENTS.md` › "Commands".
+`in_progress` — fase F0 (Fundação). Concluídas: `SPEC-0001-T001` (scaffold Next.js), `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright) e `SPEC-0001-T007` (`src/lib`: pt-BR, fuso, CPF/CNPJ). Comandos do projeto em `AGENTS.md` › "Commands".
 
 ## Current / next task
 
-`SPEC-0001-T007` — `src/lib`: formatação pt-BR, fuso America/Sao_Paulo, validação de CPF/CNPJ (`ready`, não precisa de Docker).
-Também `ready`: `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO). Requer instalar o Docker nesta máquina (ainda ausente); T004, T005 e o resto da F0 dependem dela.
+`SPEC-0001-T003` — Docker dev (PostgreSQL 17 + MinIO), `ready`. **Bloqueio prático:** o Docker não está instalado nesta máquina; T004, T005 e o resto da F0 dependem dela.
+Sem Docker, também `ready`: `SPEC-0001-T047` (`expandRecurrence`, fase F4, só depende da T007).
 
 ## Recently completed
 
+- 2026-11-05: `SPEC-0001-T007` — `src/lib/{timezone,format,documents}.ts` + 36 testes unitários; CNPJ alfanumérico aceito; parte unitária de V-005 e V-033 executada.
 - 2026-11-05: `SPEC-0001-T002` — scripts `lint`, `format`/`format:check`, `typecheck`, `test`, `test:integration`, `test:e2e` com um teste de exemplo cada, todos exit 0; Chromium do Playwright instalado; `agentRules: false` no `next.config.ts`.
 - 2026-11-05: `SPEC-0001-T001` — scaffold (`pnpm install`, `pnpm build` e `pnpm dev` OK; página inicial conferida no navegador). Node 24.22.1 instalado via winget; pnpm 12.16.1 global.
 - 2026-11-05: `iniciar spec` → SPEC-0001 criada; OQ-01..09 respondidas; aprovada → `specified`.
@@ -32,7 +33,7 @@ Também `ready`: `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO). Requer in
 
 ## Last verification
 
-2026-11-05, após a T002: `pnpm lint`, `pnpm format:check`, `pnpm typecheck` exit 0; `pnpm test` 2/2; `pnpm test:integration` 1/1; `pnpm test:e2e` 4/4 (dev) e 4/4 (`CI=1`, build de produção). Testes são exemplos de suporte: nenhum AC verificado ainda (`verification.md` inalterado). `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
+2026-11-05, após a T007: `pnpm lint`, `pnpm format:check`, `pnpm typecheck` exit 0; `pnpm test` 38/38 (também com `TZ` UTC, Tóquio e Los Angeles); `pnpm test:integration` 1/1. `pnpm test:e2e` 4/4 na T002 (não afetado pela T007). Nenhum AC completo verificado: V-005 e V-033 têm só a parte unitária executada (anotado em `verification.md`). `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
 
 ## Relevant files
 
@@ -45,7 +46,7 @@ Também `ready`: `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO). Requer in
 
 ## Next recommended action
 
-1. `SPEC-0001-T007` (utilitários pt-BR e CPF/CNPJ); em paralelo, instalar o Docker para liberar a `SPEC-0001-T003`.
+1. Instalar o Docker (Docker Desktop com WSL 2) para liberar a `SPEC-0001-T003` e o resto da F0; enquanto isso, `SPEC-0001-T047` pode ser adiantada.
 2. Usuário envia os modelos de proposta e contrato (OQ-06) para desbloquear T045/T056.
 3. Pedir `salvar contexto` para atualizar `Context/STATE.md` (ainda diz "nenhum código").
 

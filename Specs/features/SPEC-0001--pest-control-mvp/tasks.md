@@ -59,12 +59,12 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: teste de integração cria dados em duas empresas numa tabela de exemplo e prova que cada uma só vê os seus; sem tenant definido, zero linhas; o teste de varredura passa
   Evidence:
 
-- [ ] SPEC-0001-T007 — Implementar `src/lib`: formatação pt-BR (DD/MM/AAAA, R$, vírgula decimal), fuso America/Sao_Paulo e validação de CPF/CNPJ
-  Status: ready
+- [x] SPEC-0001-T007 — Implementar `src/lib`: formatação pt-BR (DD/MM/AAAA, R$, vírgula decimal), fuso America/Sao_Paulo e validação de CPF/CNPJ
+  Status: completed
   Requirements: REQ-051, REQ-005
   Depends on: SPEC-0001-T002
   Done when: testes unitários cobrem formatos, virada de dia no fuso e CPF/CNPJ válidos/inválidos
-  Evidence:
+  Evidence: 2026-11-05 — `src/lib/timezone.ts` (`toSaoPauloDate`, `todayInSaoPaulo`, `saoPauloToInstant`, `parsePlainDate`), `src/lib/format.ts` (`formatDate`, `formatDateTime`, `formatCurrency`, `formatNumber`, `parseDecimal`), `src/lib/documents.ts` (`isValidCpf`, `isValidCnpj`, `normalize*`, `format*`). `pnpm test`: 36 testes novos em `tests/unit/{timezone,format,documents}.test.ts` (38/38 no total), também com `TZ=UTC`, `Asia/Tokyo` e `America/Los_Angeles`; cobrem virada de dia 23:59/00:00, horário de verão histórico (2018, UTC−2), data `date` sem deslocamento, R$ com valores `numeric` em texto, vírgula decimal, CPF/CNPJ válidos e inválidos. `pnpm lint`, `format:check`, `typecheck`, `test:integration` exit 0. Notas: CNPJ aceita o formato alfanumérico da Receita (IN RFB 2.229/2024, emitido desde jul/2026; exemplo oficial `12.ABC.345/01DE-35`) e é normalizado em maiúsculas; datas de calendário (`YYYY-MM-DD`) são formatadas sem conversão de fuso; `parseDecimal` recusa "1.5" (ambíguo em pt-BR). Parte unitária de V-005 e V-033; os ACs completos dependem de T020/T027 e das telas.
 
 - [ ] SPEC-0001-T008 — Integrar Better Auth em `src/server/auth` (e-mail/senha, scrypt, cookies seguros, expiração por inatividade, rate limit de login) com `user.tenant_id`, `user.roles` e `user.active`
   Status: pending
@@ -348,7 +348,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
 ## F4 — Contratos
 
 - [ ] SPEC-0001-T047 — Implementar `expandRecurrence` (intervalo em dias/semanas/meses/anos, preferência de dia, número fixo, sob demanda)
-  Status: pending
+  Status: ready
   Requirements: REQ-058
   Depends on: SPEC-0001-T007
   Done when: testes unitários: mensal/trimestral em 12 meses = 12 + 4 datas; a cada 15 dias; dia 31 → último dia do mês; sob demanda → nenhuma data

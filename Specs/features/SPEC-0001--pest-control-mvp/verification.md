@@ -17,7 +17,7 @@ Nada foi executado ainda: todo resultado é `NOT_RUN`. Os comandos exatos são p
 | V-002 | AC-002, REQ-002, REQ-049 | Integração: endpoints proibidos por perfil → 403 (todas as entidades em T088) | NOT_RUN | — | T018, T088 |
 | V-003 | AC-003, REQ-003 | Integração: login de usuário desativado negado; histórico preservado | NOT_RUN | — | T018 |
 | V-004 | AC-004, REQ-004 | Integração: auditoria de reagendamento de OS | NOT_RUN | — | T018 (helper), T069 (OS) |
-| V-005 | AC-005, REQ-005 | Unidade (CPF/CNPJ) + integração (unicidade por empresa) | NOT_RUN | — | T027 |
+| V-005 | AC-005, REQ-005 | Unidade (CPF/CNPJ) + integração (unicidade por empresa) | NOT_RUN | — | T027. Parte unitária executada em 2026-11-05 (T007): `pnpm test` › `tests/unit/documents.test.ts` passou (dígitos verificadores, CNPJ alfanumérico). Integração (unicidade, mensagem de recusa) pendente |
 | V-006 | AC-006, REQ-006, REQ-007, REQ-008 | E2E: ficha do cliente com 2 locais | NOT_RUN | — | T077 |
 | V-007 | AC-007, REQ-009, REQ-010, REQ-011, REQ-012, REQ-013 | Integração: produto químico incompleto recusado; inativos fora das seleções | NOT_RUN | — | T027 |
 | V-008 | AC-008, REQ-014, REQ-017 | PDF: texto extraído da proposta confere com a tela | NOT_RUN | — | T046 |
@@ -45,7 +45,7 @@ Nada foi executado ainda: todo resultado é `NOT_RUN`. Os comandos exatos são p
 | V-030 | AC-030, REQ-047 | E2E: filtro de OS por técnico e período | NOT_RUN | — | T069 |
 | V-031 | AC-031, REQ-002 | Unidade (serializadores) + E2E: técnico sem valores; secretária só leitura | NOT_RUN | — | T069 |
 | V-032 | AC-032, REQ-050 | Integração: anonimização preserva documentos retidos | NOT_RUN | — | T088 |
-| V-033 | AC-033, REQ-051 | Unidade: formatadores pt-BR; amostragem de telas/PDFs | NOT_RUN | — | T018 |
+| V-033 | AC-033, REQ-051 | Unidade: formatadores pt-BR; amostragem de telas/PDFs | NOT_RUN | — | T018. Parte unitária executada em 2026-11-05 (T007): `pnpm test` › `tests/unit/{format,timezone}.test.ts` passou, também com `TZ` UTC/Tóquio/Los Angeles. Amostragem de telas e PDFs pendente |
 | V-034 | AC-034, REQ-052 | Integração + E2E: anexos de OS concluída imutáveis | NOT_RUN | — | T069 |
 | V-035 | AC-035, REQ-053 | Manual documentado: restauração em homologação (`docker/backup/RESTORE.md`) | NOT_RUN | — | T084 |
 | V-036 | AC-036, REQ-054 | Integração: gravações concorrentes → CONFLICT | NOT_RUN | — | T018 |
