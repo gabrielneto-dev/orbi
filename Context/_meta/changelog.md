@@ -3,6 +3,10 @@
 Mudanças **estruturais** da memória (branches, taxonomia, protocolos, schema, grandes consolidações).
 Não é log de conversa.
 
+## 2026-11-05 — Fluxo git direto na main
+
+- `AGENTS.md`: nova seção `Git workflow` (fora dos blocos gerenciados): todo trabalho vai direto para `main`, sem branches nem PRs; push só em fast-forward; commits/pushes continuam sob pedido do usuário.
+
 ## 2026-11-05 — Domínio definido (controle de pragas)
 
 - `core/` preenchido com o produto (SaaS multiempresa para dedetizadoras): overview, goals, constraints e glossário de domínio. Decisão: `CTX-DEC-20261105-product-scope-saas-pest-control`.

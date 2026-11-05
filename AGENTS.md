@@ -109,3 +109,9 @@ Development follows the adaptive SDD protocol in `Specs/README.md` (the detailed
 10. Never put secrets in `Specs/`.
 
 <!-- SPEC-DRIVEN:END -->
+
+# Git workflow
+
+- All work lands directly on `main`: no feature branches, no pull requests (user decision, 2026-11-05).
+- Commits and pushes still happen only when the user asks.
+- If the agent runs in a separate git worktree while `main` is checked out elsewhere, commit there, push with `git push origin HEAD:main` (fast-forward only; never force-push), then fast-forward the `main` checkout with `git pull --ff-only`. If the push is not a fast-forward, stop and ask.
