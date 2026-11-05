@@ -1,7 +1,7 @@
 ---
 id: SPEC-0001
 title: Plataforma SaaS de gestão para empresas de controle de pragas (MVP)
-status: planned
+status: in_progress
 level: critical
 priority: high
 created_at: 2026-11-05

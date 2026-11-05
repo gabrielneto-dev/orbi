@@ -17,22 +17,22 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
 
 ## F0 — Fundação
 
-- [ ] SPEC-0001-T001 — Criar o projeto Next.js (App Router) com TypeScript estrito, pnpm, Node 24 LTS, Tailwind e shadcn/ui, na estrutura de pastas do plan.md
-  Status: ready
+- [x] SPEC-0001-T001 — Criar o projeto Next.js (App Router) com TypeScript estrito, pnpm, Node 24 LTS, Tailwind e shadcn/ui, na estrutura de pastas do plan.md
+  Status: completed
   Requirements: none
   Depends on: none
   Done when: suporte (base de todo o código) — `pnpm install`, `pnpm build` e `pnpm dev` funcionam e a página inicial abre; pastas `src/app`, `src/server`, `src/lib`, `tests/` existem
-  Evidence:
+  Evidence: 2026-11-05 — Node 24.22.1 (winget) + pnpm 12.16.1; scaffold `create-next-app@16.4.5` (Next 16.4.5, React 19.3.0, Tailwind 4.3.4, TypeScript 5.9.3 com `strict` + `noUncheckedIndexedAccess`), `shadcn@4.23.0 init --base radix` + `button`. `pnpm install` OK; `pnpm build` exit 0 (TypeScript OK, `/` estático); `pnpm dev` → `GET / 200`, página "orbi" com Button shadcn conferida no navegador. Pastas `src/{app,server,lib,components}` e `tests/{unit,integration,e2e,load}` criadas. Notas: `cacheComponents` e `partialPrefetching` vêm ligados no template do Next 16.4 (mantidos); shadcn usa o pacote `cn` (oficial do shadcn) no lugar de clsx + tailwind-merge; `.gitignore` já ignora `.env*` (exceto `.env.example`), adiantando parte da T003. Sem teste automatizado (ferramentas chegam na T002).
 
 - [ ] SPEC-0001-T002 — Configurar ESLint, Prettier, typecheck, Vitest e Playwright com scripts `lint`, `typecheck`, `test`, `test:integration`, `test:e2e`, e registrar os comandos em `AGENTS.md`
-  Status: pending
+  Status: ready
   Requirements: none
   Depends on: SPEC-0001-T001
   Done when: suporte (ferramentas de verificação) — os cinco scripts rodam com um teste de exemplo cada; `AGENTS.md` lista os comandos
   Evidence:
 
 - [ ] SPEC-0001-T003 — Criar `docker/compose.dev.yml` (PostgreSQL 17, MinIO), `.env.example` só com nomes de variáveis e entradas `.env*` no `.gitignore`
-  Status: pending
+  Status: ready
   Requirements: none
   Depends on: SPEC-0001-T001
   Done when: suporte (ambiente local) — `docker compose -f docker/compose.dev.yml up` sobe banco e MinIO; nenhum valor de segredo versionado
