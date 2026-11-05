@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // AGENTS.md é o contrato do projeto: o `next dev` não deve reescrevê-lo
+  // (a orientação equivalente está na seção "Commands" do AGENTS.md).
+  agentRules: false,
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

@@ -1,0 +1,15 @@
+# Documentação do projeto: formatada à mão, fora do Prettier
+Context/
+Specs/
+AGENTS.md
+CLAUDE.md
+
+# Gerados
+pnpm-lock.yaml
+.next/
+out/
+build/
+coverage/
+playwright-report/
+test-results/
+next-env.d.ts

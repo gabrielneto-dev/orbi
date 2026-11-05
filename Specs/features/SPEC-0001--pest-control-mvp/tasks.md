@@ -24,12 +24,12 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: suporte (base de todo o código) — `pnpm install`, `pnpm build` e `pnpm dev` funcionam e a página inicial abre; pastas `src/app`, `src/server`, `src/lib`, `tests/` existem
   Evidence: 2026-11-05 — Node 24.22.1 (winget) + pnpm 12.16.1; scaffold `create-next-app@16.4.5` (Next 16.4.5, React 19.3.0, Tailwind 4.3.4, TypeScript 5.9.3 com `strict` + `noUncheckedIndexedAccess`), `shadcn@4.23.0 init --base radix` + `button`. `pnpm install` OK; `pnpm build` exit 0 (TypeScript OK, `/` estático); `pnpm dev` → `GET / 200`, página "orbi" com Button shadcn conferida no navegador. Pastas `src/{app,server,lib,components}` e `tests/{unit,integration,e2e,load}` criadas. Notas: `cacheComponents` e `partialPrefetching` vêm ligados no template do Next 16.4 (mantidos); shadcn usa o pacote `cn` (oficial do shadcn) no lugar de clsx + tailwind-merge; `.gitignore` já ignora `.env*` (exceto `.env.example`), adiantando parte da T003. Sem teste automatizado (ferramentas chegam na T002).
 
-- [ ] SPEC-0001-T002 — Configurar ESLint, Prettier, typecheck, Vitest e Playwright com scripts `lint`, `typecheck`, `test`, `test:integration`, `test:e2e`, e registrar os comandos em `AGENTS.md`
-  Status: ready
+- [x] SPEC-0001-T002 — Configurar ESLint, Prettier, typecheck, Vitest e Playwright com scripts `lint`, `typecheck`, `test`, `test:integration`, `test:e2e`, e registrar os comandos em `AGENTS.md`
+  Status: completed
   Requirements: none
   Depends on: SPEC-0001-T001
   Done when: suporte (ferramentas de verificação) — os cinco scripts rodam com um teste de exemplo cada; `AGENTS.md` lista os comandos
-  Evidence:
+  Evidence: 2026-11-05 — `pnpm lint` (ESLint 10.14 + eslint-config-next 16.4.5 + eslint-config-prettier, `--max-warnings=0`) exit 0; `pnpm format:check` (Prettier 3.9 + plugin Tailwind) exit 0; `pnpm typecheck` (`next typegen && tsc --noEmit`) exit 0; `pnpm test` (Vitest 5.1, projeto `unit`) 2/2 em `tests/unit/utils.test.ts`; `pnpm test:integration` (projeto `integration`) 1/1 em `tests/integration/home-page.test.tsx`; `pnpm test:e2e` (Playwright 1.64, projetos `desktop` e `mobile-360`) 4/4 com `next dev` e 4/4 com `CI=1` (build de produção). Lint conferido com arquivo temporário de violações (hooks, `any`, `<img>`, `key`, `<a>`): 8 problemas detectados. `AGENTS.md` › "Commands" lista os comandos. Notas: ESLint 10 escolhido porque o 9 está descontinuado; os plugins react/jsx-a11y/import declaram peer `eslint ≤ 9` (aviso do pnpm), mas as regras rodam — voltar para `eslint@^9` se algo quebrar. `agentRules: false` no `next.config.ts` impede o `next dev` de reescrever o `AGENTS.md`. Prettier com `endOfLine: auto` (git `core.autocrlf=true` no Windows). Integração ainda sem PostgreSQL (entra na T005/T006).
 
 - [ ] SPEC-0001-T003 — Criar `docker/compose.dev.yml` (PostgreSQL 17, MinIO), `.env.example` só com nomes de variáveis e entradas `.env*` no `.gitignore`
   Status: ready
@@ -60,7 +60,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence:
 
 - [ ] SPEC-0001-T007 — Implementar `src/lib`: formatação pt-BR (DD/MM/AAAA, R$, vírgula decimal), fuso America/Sao_Paulo e validação de CPF/CNPJ
-  Status: pending
+  Status: ready
   Requirements: REQ-051, REQ-005
   Depends on: SPEC-0001-T002
   Done when: testes unitários cobrem formatos, virada de dia no fuso e CPF/CNPJ válidos/inválidos

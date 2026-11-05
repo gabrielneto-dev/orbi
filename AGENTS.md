@@ -110,6 +110,26 @@ Development follows the adaptive SDD protocol in `Specs/README.md` (the detailed
 
 <!-- SPEC-DRIVEN:END -->
 
+# Commands
+
+Toolchain: Node 24 LTS (`.node-version`) and pnpm (version pinned in `package.json` › `packageManager`). Run from the repository root.
+
+| Purpose | Command |
+|---|---|
+| Install dependencies | `pnpm install` |
+| Dev server | `pnpm dev` |
+| Production build | `pnpm build` |
+| Lint (ESLint, zero warnings) | `pnpm lint` |
+| Check / apply formatting (Prettier) | `pnpm format:check` / `pnpm format` |
+| Typecheck | `pnpm typecheck` |
+| Unit tests (Vitest, `tests/unit`, `src/**/*.test.ts`) | `pnpm test` |
+| Integration tests (Vitest, `tests/integration`) | `pnpm test:integration` |
+| E2E tests (Playwright, desktop + 360 px) | `pnpm test:e2e` (first time: `pnpm exec playwright install chromium`) |
+
+Before declaring a task done, run `pnpm lint`, `pnpm format:check`, `pnpm typecheck` and the test scripts it affects.
+
+Next.js 16 differs from older versions in APIs and conventions: check the bundled docs in `node_modules/next/dist/docs/` before writing framework code, and heed deprecation notices.
+
 # Git workflow
 
 - All work lands directly on `main`: no feature branches, no pull requests (user decision, 2026-11-05).
