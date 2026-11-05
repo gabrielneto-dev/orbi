@@ -143,7 +143,7 @@ def build_catalog(records: list[tuple[Path, dict]]) -> str:
     for path, meta in records:
         entry = {field: meta.get(field) for field in CATALOG_FIELDS}
         entry["tags"] = as_list(entry["tags"])
-        entry["path"] = str(path.relative_to(CONTEXT_ROOT))
+        entry["path"] = path.relative_to(CONTEXT_ROOT).as_posix()
         lines.append(json.dumps(entry, ensure_ascii=False, separators=(",", ":")))
     return "\n".join(lines) + ("\n" if lines else "")
 

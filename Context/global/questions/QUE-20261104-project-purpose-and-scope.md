@@ -4,11 +4,11 @@ type: question
 title: Qual é o propósito, público e escopo do projeto orbi?
 branch: global
 tags: [scope, goals, domain]
-status: open
+status: answered
 created_at: 2026-11-04
-updated_at: 2026-11-04
+updated_at: 2026-11-05
 related: [CTX-QUE-20261104-project-type-and-stack]
-resolved_by: null
+resolved_by: CTX-DEC-20261105-product-scope-saas-pest-control
 ---
 
 # Question: propósito e escopo do orbi
@@ -35,3 +35,7 @@ Nenhuma evidência no repositório. O nome "orbi" não deve ser usado para infer
 ## How to resolve
 
 Perguntar ao usuário (ou ler documentação/código que venha a ser adicionado) e registrar a resposta aqui com `status: answered`, atualizando `core/`.
+
+## Answer
+
+2026-11-05 (usuário): o orbi é uma plataforma web SaaS multiempresa para dedetizadoras — ordens de serviço, propostas, contratos, estoque simples, catálogo de serviços e dispositivos de monitoramento; perfis secretária, comercial, técnico, gestor e financeiro; financeiro e offline fora do MVP. Decisão: `CTX-DEC-20261105-product-scope-saas-pest-control`. Requisitos: `SPEC-0001`. `core/` atualizado na mesma data.

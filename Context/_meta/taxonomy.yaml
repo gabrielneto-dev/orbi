@@ -1,7 +1,7 @@
 version: 1
 
-# Domain is still undefined (CTX-QUE-20261104-project-purpose-and-scope).
-# Add domain tags and branches once the project's purpose is known.
+# Domain: SaaS for pest control companies (CTX-DEC-20261105-product-scope-saas-pest-control).
+# Add domain branches once implementation produces area-specific knowledge.
 
 types:
   FCT: fact
@@ -38,6 +38,8 @@ canonical_tags:
     - glossary
     - scope
     - domain
+    - product
+    - regulatory
     - tech-stack
 
 statuses:
