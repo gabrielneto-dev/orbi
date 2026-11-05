@@ -1,0 +1,55 @@
+sdd_version: 1
+project: orbi
+root: Specs
+content_language: pt-BR   # follows CTX-ASM-20261104-context-language-pt-br
+
+# How each policy is fulfilled is documented in Specs/README.md (section in brackets).
+# These are policy declarations, not running automation: agents apply them.
+
+mode: adaptive            # [§6] depth proportional to complexity
+
+complexity_levels:        # [§6] spec `level:` uses lightweight | full | critical
+  - trivial               # level 0: no spec
+  - lightweight           # level 1: single spec.md
+  - full                  # level 2: spec + plan + tasks + verification
+  - critical              # level 3: full + risk/rollback/security + human approval
+
+ids:
+  spec: "SPEC-NNNN"
+  task: "SPEC-NNNN-TNNN"
+  requirement: "REQ-NNN"
+  acceptance_criterion: "AC-NNN"
+  verification: "V-NNN"
+  reuse_ids: false
+  next_id_source: INDEX.md
+
+statuses:
+  spec: [draft, specified, planned, in_progress, verifying, done, blocked, cancelled, superseded]
+  task: [pending, ready, in_progress, blocked, completed, cancelled]
+  verification: [PASS, FAIL, BLOCKED, NOT_RUN, NOT_APPLICABLE]
+  priority: [low, medium, high, critical]
+
+persistence:              # [§9]
+  operational_state: automatic        # agent writes Specs/ files at each event
+  checkpoint_on_task_completion: true # tasks.md + STATE.md updated when a task completes
+  checkpoint_on_phase_transition: true
+  general_context_save: existing_policy  # Context/README.md §10, explicit trigger
+  auto_commit: false
+
+context:                  # [§1, §10]
+  integration: true
+  progressive_loading: true
+  duplicate_knowledge: false
+  catalog: ../Context/_meta/catalog.jsonl
+
+quality:                  # [§7, §11, §12]
+  require_acceptance_criteria: true
+  require_verification_for_completion: true
+  preserve_traceability: true
+  detect_spec_drift: true
+  checker: _meta/tools/sdd_check.py
+
+safety:                   # [§14]
+  preserve_existing_files: true
+  allow_secrets: false
+  require_approval_for_destructive_actions: true

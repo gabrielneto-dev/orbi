@@ -6,7 +6,7 @@ branch: core
 tags: [glossary, context-engineering]
 status: active
 created_at: 2026-11-04
-updated_at: 2026-11-04
+updated_at: 2026-11-05
 ---
 
 # Glossary
@@ -22,4 +22,5 @@ updated_at: 2026-11-04
 - **L0/L1/L2/L3** — níveis de carregamento: orientação global → índice de branch → registros → evidências.
 - **Checkpoint** — fotografia compacta de continuidade criada a cada `salvar contexto`.
 - **Supersession** — substituição de um registro por outro, preservando ambos (`supersedes`/`superseded_by`).
+- **SDD / Spec** — Spec-Driven Development; specs `SPEC-NNNN` em `Specs/` (protocolo em `Specs/README.md`).
 - **Catálogo** — `_meta/catalog.jsonl`, índice derivado e reconstruível dos registros.

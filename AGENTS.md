@@ -5,6 +5,7 @@ Shared operating contract for every AI agent working in this repository
 
 - **How to work** lives here.
 - **What the project knows** lives in `Context/`.
+- **What is being built** (specs, plans, tasks, verification) lives in `Specs/`.
 - Keep this file small and stable. No transient state, no detailed knowledge.
 
 <!-- CONTEXT-ENGINEERING:START -->
@@ -89,3 +90,22 @@ Do not put transient state or detailed knowledge in `AGENTS.md`.
 After changing records, run `python3 Context/_meta/tools/context_check.py --rebuild-catalog` to validate IDs/relations, scan for secrets and regenerate the catalog.
 
 <!-- CONTEXT-ENGINEERING:END -->
+
+<!-- SPEC-DRIVEN:START -->
+
+# Spec-Driven Development
+
+Development follows the adaptive SDD protocol in `Specs/README.md` (the detailed rules live there, not here).
+
+1. **Recover first.** For non-trivial work, after the Context discovery steps above, read `Specs/INDEX.md` and `Specs/STATE.md`, then only the relevant spec, its plan and the tasks you need. Reconcile the documented state against the code, `git` and tests before continuing.
+2. **Reuse specs.** Look for an existing spec in `Specs/INDEX.md` before creating one. A scope change updates its spec, with traceability. Never reuse IDs.
+3. **Classify complexity** by real impact: `trivial` (no spec) · `lightweight` (single `spec.md`) · `full` (spec + plan + tasks + verification) · `critical` (full + risk, rollback, and human approval for destructive, irreversible or sensitive actions).
+4. **No significant implementation without enough requirements and a plan.** Ask the user before implementing behavior that depends on an unresolved critical question.
+5. **Follow the tasks and acceptance criteria.** Do not add unapproved features or unrelated refactors. Do not change accepted requirements to make code or tests pass.
+6. **Verify with evidence.** Record PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE as actually observed. Written code is not done code.
+7. **Persist SDD progress automatically, as it happens.** On every spec, plan or task change, task completion, blocker, or phase transition, update the affected files in `Specs/` (always `Specs/STATE.md`). This covers `Specs/` only: writes to `Context/` still follow the Context write policy above (one exception: a durable decision made while planning is recorded as a `DEC` in `Context/` and referenced from the spec). Commits and pushes require explicit instruction.
+8. **Check drift** with `python3 Specs/_meta/tools/sdd_check.py` before declaring a phase or spec done.
+9. Semantic intents: `iniciar spec`, `planejar spec`, `gerar tarefas`, `implementar spec`, `validar spec`, `status sdd`, `retomar desenvolvimento`, `auditar sdd` (see `Specs/README.md` §13).
+10. Never put secrets in `Specs/`.
+
+<!-- SPEC-DRIVEN:END -->

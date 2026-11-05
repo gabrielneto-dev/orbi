@@ -26,6 +26,9 @@ related: []
 
 ## Current state
 
+## SDD state
+<!-- Por referência: spec ativa (SPEC-NNNN), fase, próxima tarefa, última verificação. Detalhe fica em Specs/STATE.md. -->
+
 ## Open questions
 
 ## Next steps
