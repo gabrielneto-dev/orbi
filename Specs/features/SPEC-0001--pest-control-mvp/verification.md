@@ -49,7 +49,7 @@ Nada foi executado ainda: todo resultado é `NOT_RUN`. Os comandos exatos são p
 | V-034 | AC-034, REQ-052 | Integração + E2E: anexos de OS concluída imutáveis | NOT_RUN | — | T069 |
 | V-035 | AC-035, REQ-053 | Manual documentado: restauração em homologação (`docker/backup/RESTORE.md`) | NOT_RUN | — | T084 |
 | V-036 | AC-036, REQ-054 | Integração: gravações concorrentes → CONFLICT | NOT_RUN | — | T018 |
-| V-037 | AC-037, REQ-061, REQ-049 | Suíte de isolamento: varredura de RLS + acesso cruzado por ID em todas as entidades | NOT_RUN | — | parcial em T018–T077, completa em T088 |
+| V-037 | AC-037, REQ-061, REQ-049 | Suíte de isolamento: varredura de RLS + acesso cruzado por ID em todas as entidades | NOT_RUN | — | parcial em T018–T077, completa em T088. Base executada em 2026-11-05 (T006): `tests/integration/tenant-isolation.test.ts` — varredura de RLS passa (e detecta tabela sem RLS/FORCE/política) e uma tabela de exemplo prova isolamento por ID entre duas empresas sob `orbi_app`. Nenhuma entidade de M2–M9 existe ainda |
 | V-038 | AC-038, REQ-062, REQ-063 | Integração: criar/suspender/reativar empresa; admin sem dados operacionais | NOT_RUN | — | T018 |
 | V-039 | AC-039, REQ-064 | Integração: mesmo CNPJ, código e numeração em empresas distintas | NOT_RUN | — | T027, T046, T077 |
 | V-040 | AC-040, REQ-058, REQ-022 | Unidade (recorrência) + integração: prévia = OS geradas; sob demanda sem OS | NOT_RUN | — | T057 |

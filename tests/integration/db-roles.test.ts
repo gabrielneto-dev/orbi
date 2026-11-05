@@ -1,53 +1,41 @@
-import { randomBytes } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { bootstrapDatabase } from "@/server/db/bootstrap.ts";
-import { runMigrations } from "@/server/db/migrate.ts";
-import { DB_ROLES, withDatabase } from "@/server/db/roles.ts";
+import { MIGRATIONS_FOLDER, runMigrations } from "@/server/db/migrate.ts";
+import { DB_ROLES } from "@/server/db/roles.ts";
+import { createTestDatabase, withClient, type TestDatabase } from "./support/test-database.ts";
 
-// SPEC-0001-T005 / REQ-061: papéis do banco e migração inicial numa base vazia.
+// SPEC-0001-T005 / REQ-061: papéis do banco e migrações numa base vazia.
 
-function env(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`Defina ${name} (veja .env.example) para os testes de integração`);
-  return value;
-}
+/** Total de migrações em drizzle/ (cresce a cada migração nova). */
+const journal = JSON.parse(
+  readFileSync(path.join(MIGRATIONS_FOLDER, "meta", "_journal.json"), "utf8"),
+) as { entries: unknown[] };
+const expectedMigrations = journal.entries.length;
 
-const database = `orbi_test_${randomBytes(4).toString("hex")}`;
-const adminUrl = env("DATABASE_URL_ADMIN");
-const ownerUrl = withDatabase(env("DATABASE_URL_OWNER"), database);
-const appUrl = withDatabase(env("DATABASE_URL"), database);
-const platformUrl = withDatabase(env("DATABASE_URL_PLATFORM"), database);
+let testDb: TestDatabase;
+let database: string;
+let ownerUrl: string;
+let appUrl: string;
 
 /** Conexão de superusuário dentro da base temporária, para inspecionar o catálogo. */
 let catalog: pg.Client;
 
-async function queryAs<T extends pg.QueryResultRow>(url: string, text: string) {
-  const client = new pg.Client({ connectionString: url });
-  await client.connect();
-  try {
-    return await client.query<T>(text);
-  } finally {
-    await client.end();
-  }
+function queryAs<T extends pg.QueryResultRow>(url: string, text: string) {
+  return withClient(url, (client) => client.query<T>(text));
 }
 
 beforeAll(async () => {
-  await bootstrapDatabase({ adminUrl, ownerUrl, appUrl, platformUrl });
-  await runMigrations(ownerUrl);
-  catalog = new pg.Client({ connectionString: withDatabase(adminUrl, database) });
+  testDb = await createTestDatabase();
+  ({ database, ownerUrl, appUrl } = testDb);
+  catalog = new pg.Client({ connectionString: testDb.catalogUrl });
   await catalog.connect();
 });
 
 afterAll(async () => {
   await catalog?.end();
-  const admin = new pg.Client({ connectionString: adminUrl });
-  await admin.connect();
-  try {
-    await admin.query(`DROP DATABASE IF EXISTS ${admin.escapeIdentifier(database)} WITH (FORCE)`);
-  } finally {
-    await admin.end();
-  }
+  await testDb?.drop();
 });
 
 describe("papéis PostgreSQL", () => {
@@ -110,12 +98,12 @@ describe("papéis PostgreSQL", () => {
   });
 });
 
-describe("migração inicial", () => {
-  it("aplica numa base vazia e fica registrada", async () => {
+describe("migrações", () => {
+  it("todas aplicam numa base vazia e ficam registradas", async () => {
     const { rows } = await catalog.query<{ total: string }>(
       "SELECT count(*) AS total FROM drizzle.__drizzle_migrations",
     );
-    expect(Number(rows[0]?.total)).toBe(1);
+    expect(Number(rows[0]?.total)).toBe(expectedMigrations);
   });
 
   it("é idempotente: rodar de novo não reaplica nada", async () => {
@@ -123,7 +111,7 @@ describe("migração inicial", () => {
     const { rows } = await catalog.query<{ total: string }>(
       "SELECT count(*) AS total FROM drizzle.__drizzle_migrations",
     );
-    expect(Number(rows[0]?.total)).toBe(1);
+    expect(Number(rows[0]?.total)).toBe(expectedMigrations);
   });
 
   it("recusa rodar com outro papel que não orbi_owner", async () => {

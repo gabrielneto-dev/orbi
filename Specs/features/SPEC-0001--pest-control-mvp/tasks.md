@@ -52,12 +52,12 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: migração inicial aplica num banco vazio; `orbi_app` não é dono de tabelas nem tem BYPASSRLS (verificado por consulta em teste)
   Evidence: 2026-11-05 — drizzle-orm 0.45.4 + drizzle-kit 0.31.11 + pg 8.23.1; `drizzle.config.ts`, `src/server/db/{roles,bootstrap,migrate}.ts`, `drizzle/0000_init.sql` (revoga CREATE em `public` de PUBLIC; função `uuid_generate_v7()`). Papéis criados por `pnpm db:bootstrap` (superusuário via `DATABASE_URL_ADMIN`, idempotente, senhas tiradas das URLs; base pertence a `orbi_owner`; CONNECT só para `orbi_app`/`orbi_platform`); `pnpm db:migrate` recusa outro papel que não `orbi_owner`. `pnpm test:integration` › `tests/integration/db-roles.test.ts` 8/8 numa base vazia criada e apagada a cada execução: os 3 papéis sem SUPERUSER/BYPASSRLS/CREATEROLE/CREATEDB; `orbi_app`/`orbi_platform` donos de nenhum objeto (relações, schemas, funções, tipos); base de `orbi_owner`; `orbi_app` sem filiação a papéis e sem CREATE em `public` (42501); migração registrada 1×, idempotente; UUID v7 válido e ordenável. Provas negativas manuais: tabela com dono `orbi_app` é detectada pela consulta; `ALTER ROLE orbi_app BYPASSRLS` é revertido pelo bootstrap. Base `orbi` de dev com bootstrap + migração aplicados. `lint`, `format:check`, `typecheck`, `test` (38), `test:e2e` (4) exit 0. Notas: papéis ficam fora das migrações por serem do servidor inteiro (bootstrap = passo de provisionamento, também em produção); nova variável `DATABASE_URL_ADMIN` (só bootstrap e testes); `package.json` passou a `"type": "module"` (scripts Node em TS nativo); arquivos de `src/server/db` importam com extensão `.ts` (`allowImportingTsExtensions`) para rodar direto no Node.
 
-- [ ] SPEC-0001-T006 — Criar tabela `tenants`, helper `withTenant()` (`set_config('app.tenant_id', …, true)`), política RLS padrão e teste que falha se alguma tabela com `tenant_id` não tiver RLS habilitado e forçado
-  Status: ready
+- [x] SPEC-0001-T006 — Criar tabela `tenants`, helper `withTenant()` (`set_config('app.tenant_id', …, true)`), política RLS padrão e teste que falha se alguma tabela com `tenant_id` não tiver RLS habilitado e forçado
+  Status: completed
   Requirements: REQ-061, REQ-064
   Depends on: SPEC-0001-T005
   Done when: teste de integração cria dados em duas empresas numa tabela de exemplo e prova que cada uma só vê os seus; sem tenant definido, zero linhas; o teste de varredura passa
-  Evidence:
+  Evidence: 2026-11-05 — `src/server/db/schema/tenants.ts` (`tenants(id uuid v7, name, cnpj, status active|suspended com check, created_at)`) → `drizzle/0001_tenants.sql` (gerada); `drizzle/0002_tenant_rls.sql` (manual): função `public.current_tenant_id()` (`nullif(current_setting('app.tenant_id', true), '')::uuid`), procedimento `public.enable_tenant_rls(regclass)` = ENABLE + FORCE + política `tenant_isolation` para PUBLIC com USING e WITH CHECK `tenant_id = current_tenant_id()` (EXECUTE revogado de PUBLIC); `tenants` com RLS forçado, `orbi_app` só SELECT da própria empresa, `orbi_platform` SELECT/INSERT/UPDATE (sem DELETE). `src/server/db/client.ts` (`createDatabase`, `getDb()` com `DATABASE_URL`) e `src/server/db/tenant.ts` (`withTenant(tenantId, fn, { db })`: valida UUID, transação + `set_config(..., true)`). `pnpm test:integration` › `tests/integration/tenant-isolation.test.ts` 14/14 numa base temporária migrada, com tabela de exemplo `rls_example` e pool de 1 conexão: A vê só `a1,a2` e B só `b1`; sem empresa → 0 linhas, inclusive na conexão reaproveitada após `withTenant` (caso `''`); dono da tabela também vê 0 (FORCE); A não lê/altera/apaga registro de B pelo ID; INSERT/UPDATE para outra empresa → 42501; erro desfaz a transação; tenantId não-UUID recusado; `tenants`: app vê só a própria, não grava (42501); plataforma vê todas, suspende/reativa, não apaga nem lê dados de empresa (42501); check de status (23514). Varredura (`tests/integration/support/rls-scan.ts`) passa na base migrada e, como prova negativa, detecta tabela sem RLS, sem FORCE, sem a política padrão, com política permissiva extra para a aplicação, view sem `security_invoker` e view materializada com `tenant_id`. Total integração 23/23 (`db-roles` agora conta as migrações pelo journal). `pnpm db:migrate` (2×) na base de dev exit 0; `drizzle-kit generate` sem mudanças; `lint`, `format:check`, `typecheck`, `build` exit 0; `test` 38/38; `test:e2e` 4/4. Notas: toda migração que criar tabela com `tenant_id` deve chamar `CALL public.enable_tenant_rls('public.<tabela>')` e conceder privilégios a `orbi_app` explicitamente (sem default privileges); `tenants.cnpj` sem índice único por ora (regra não definida na spec; decidir na T015, módulo plataforma).
 
 - [x] SPEC-0001-T007 — Implementar `src/lib`: formatação pt-BR (DD/MM/AAAA, R$, vírgula decimal), fuso America/Sao_Paulo e validação de CPF/CNPJ
   Status: completed
@@ -95,7 +95,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence:
 
 - [ ] SPEC-0001-T012 — Criar `audit_log` e helper que grava auditoria (antes/depois) na mesma transação da alteração, com consulta por entidade
-  Status: pending
+  Status: ready
   Requirements: REQ-004
   Depends on: SPEC-0001-T006
   Done when: teste mostra que rollback da alteração também desfaz a auditoria e que a consulta por entidade retorna usuário, data e valores
@@ -276,7 +276,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
 ## F3 — Propostas
 
 - [ ] SPEC-0001-T037 — Implementar numeração sequencial por empresa, tipo e ano (`doc_sequences`)
-  Status: pending
+  Status: ready
   Requirements: REQ-043
   Depends on: SPEC-0001-T006
   Done when: 50 criações concorrentes geram números únicos e contínuos; rollback não consome número; empresas diferentes têm sequências independentes

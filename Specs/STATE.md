@@ -1,7 +1,7 @@
 # SDD State
 
 Last updated: 2026-11-05
-Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T005)
+Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warnings (2026-11-05, após a T006)
 
 ## Active spec
 
@@ -9,16 +9,18 @@ Last verified by: `python3 Specs/_meta/tools/sdd_check.py` — 0 errors, 0 warni
 
 ## Phase
 
-`in_progress` — fase F0 (Fundação). Concluídas: `SPEC-0001-T001` (scaffold Next.js), `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright), `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO), `SPEC-0001-T005` (Drizzle, migrações, papéis do banco) e `SPEC-0001-T007` (`src/lib`: pt-BR, fuso, CPF/CNPJ). Comandos do projeto em `AGENTS.md` › "Commands".
+`in_progress` — fase F0 (Fundação). Concluídas: `SPEC-0001-T001` (scaffold Next.js), `SPEC-0001-T002` (lint, formatação, typecheck, Vitest, Playwright), `SPEC-0001-T003` (Docker dev: PostgreSQL 17 + MinIO), `SPEC-0001-T005` (Drizzle, migrações, papéis do banco), `SPEC-0001-T006` (`tenants`, `withTenant()`, RLS padrão, varredura) e `SPEC-0001-T007` (`src/lib`: pt-BR, fuso, CPF/CNPJ). Comandos do projeto em `AGENTS.md` › "Commands".
 
 ## Current / next task
 
-`SPEC-0001-T006` — tabela `tenants`, `withTenant()`, política RLS padrão e teste de varredura de RLS (`ready`). Caminho crítico da F0 (T006 → T009…; T008 também `ready`).
-Também `ready`: `SPEC-0001-T004` (CI), `SPEC-0001-T008` (Better Auth), `SPEC-0001-T038` (worker pg-boss) e `SPEC-0001-T047` (`expandRecurrence`).
+`SPEC-0001-T008` — Better Auth em `src/server/auth` (`ready`). Caminho crítico da F0: T008 → T009 (`RequestContext`, depende de T006 ✓ e T008).
+Também `ready`: `SPEC-0001-T004` (CI), `SPEC-0001-T012` (`audit_log`), `SPEC-0001-T037` (`doc_sequences`), `SPEC-0001-T038` (worker pg-boss) e `SPEC-0001-T047` (`expandRecurrence`).
+Regra para toda tabela nova com `tenant_id`: na migração, `CALL public.enable_tenant_rls('public.<tabela>')` + GRANT explícito a `orbi_app`; a varredura em `tests/integration/tenant-isolation.test.ts` falha se faltar.
 Atenção na T004: o `Done when` fala em "um PR de teste", mas o fluxo do projeto não usa PRs (tudo direto na `main`, decisão de 2026-11-05) — ajustar o critério para "um push na `main`" com o usuário antes de concluir. O CI vai precisar rodar `db:bootstrap` + `db:migrate` com `DATABASE_URL_ADMIN` antes dos testes de integração.
 
 ## Recently completed
 
+- 2026-11-05: `SPEC-0001-T006` — `tenants` (migração 0001) + `drizzle/0002_tenant_rls.sql` (`current_tenant_id()`, `enable_tenant_rls()`, RLS forçado em `tenants`, grants de `orbi_app`/`orbi_platform`); `src/server/db/{client,tenant}.ts` com `getDb()` e `withTenant()`; `tests/integration/tenant-isolation.test.ts` 14/14 (isolamento entre duas empresas numa tabela de exemplo, zero linhas sem empresa, varredura de RLS com provas negativas). T012 e T037 passaram a `ready`.
 - 2026-11-05: `SPEC-0001-T005` — Drizzle + `pg`; papéis criados por `pnpm db:bootstrap` (superusuário, idempotente) e migrações por `pnpm db:migrate` (só `orbi_owner`); migração inicial com `uuid_generate_v7()`; teste de integração 8/8 numa base vazia temporária. `package.json` agora `"type": "module"`.
 - 2026-11-05: `SPEC-0001-T003` — `docker/compose.dev.yml` + `.env.example` + scripts `services:up`/`services:down`; PostgreSQL 17.11 em 127.0.0.1:5433 e MinIO (imagem Chainguard) em 9000/9001 com bucket `orbi-dev`. `.env` local gerado com credenciais aleatórias (não versionado).
 - 2026-11-05: ambiente local — WSL 3.0.3 (WSL 2) e Docker Desktop 4.98.0 (Engine 29.9.2, Compose v5.6.1) instalados; `docker run hello-world` e `postgres:17-alpine` (17.11) OK.
@@ -36,7 +38,7 @@ Atenção na T004: o `Done when` fala em "um PR de teste", mas o fluxo do projet
 
 ## Last verification
 
-2026-11-05, após a T005: `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm build` exit 0; `pnpm test` 38/38; `pnpm test:integration` 9/9 (8 do banco, base vazia temporária); `pnpm test:e2e` 4/4; `pnpm db:bootstrap` e `pnpm db:migrate` (2×) exit 0 na base de dev. Nenhum AC completo verificado: V-005 e V-033 têm só a parte unitária executada (anotado em `verification.md`). `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
+2026-11-05, após a T006: `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm build` exit 0; `pnpm test` 38/38; `pnpm test:integration` 23/23 (bases temporárias migradas: 8 de papéis/migrações, 14 de isolamento/RLS, 1 da página); `pnpm test:e2e` 4/4; `pnpm db:migrate` (2×) exit 0 na base de dev; `drizzle-kit generate` sem mudanças. Nenhum AC completo verificado: V-005 e V-033 têm só a parte unitária; V-037 tem a base (varredura + tabela de exemplo) anotada em `verification.md`. `sdd_check.py`: 1 spec, 89 tarefas, 0 errors, 0 warnings.
 
 ## Relevant files
 
@@ -50,7 +52,7 @@ Atenção na T004: o `Done when` fala em "um PR de teste", mas o fluxo do projet
 
 ## Next recommended action
 
-1. `SPEC-0001-T006` (tenants + RLS + withTenant), depois T008/T009. Antes, `pnpm services:up` com o Docker Desktop aberto.
+1. `SPEC-0001-T008` (Better Auth), depois T009 (`RequestContext` + `withTenant`). Antes, `pnpm services:up` com o Docker Desktop aberto.
 2. Usuário envia os modelos de proposta e contrato (OQ-06) para desbloquear T045/T056.
 3. Pedir `salvar contexto` para atualizar `Context/STATE.md` (ainda diz "nenhum código").
 
