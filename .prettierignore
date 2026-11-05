@@ -6,6 +6,7 @@ CLAUDE.md
 
 # Gerados
 pnpm-lock.yaml
+drizzle/meta/
 .next/
 out/
 build/

@@ -23,6 +23,9 @@ export default defineConfig({
           name: "integration",
           environment: "node",
           include: ["tests/integration/**/*.test.{ts,tsx}"],
+          setupFiles: ["tests/integration/setup-env.ts"],
+          testTimeout: 30_000,
+          hookTimeout: 60_000,
           // Testes de integração vão compartilhar um PostgreSQL real (a partir da T005/T006).
           fileParallelism: false,
         },

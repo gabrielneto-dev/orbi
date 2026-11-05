@@ -127,8 +127,11 @@ Toolchain: Node 24 LTS (`.node-version`) and pnpm (version pinned in `package.js
 | E2E tests (Playwright, desktop + 360 px) | `pnpm test:e2e` (first time: `pnpm exec playwright install chromium`) |
 | Start local PostgreSQL 17 (port 5433) + MinIO (9000/9001) and create the bucket | `pnpm services:up` |
 | Stop local services (data kept in Docker volumes) | `pnpm services:down` |
+| Create/repair DB roles and database (superuser, idempotent) | `pnpm db:bootstrap` |
+| Apply migrations (as `orbi_owner`) | `pnpm db:migrate` |
+| Generate a migration from the Drizzle schema | `pnpm db:generate` (custom SQL: `pnpm exec drizzle-kit generate --custom --name=<name>`) |
 
-Local services need Docker Desktop running and a `.env` at the repository root, copied from `.env.example` and filled in (never commit `.env`). `docker compose` must receive `--env-file .env`; the `services:*` scripts already do that.
+Local services need Docker Desktop running and a `.env` at the repository root, copied from `.env.example` and filled in (never commit `.env`). `docker compose` must receive `--env-file .env`; the `services:*` scripts already do that. Fresh setup: `pnpm services:up`, then `pnpm db:bootstrap`, then `pnpm db:migrate`. Integration tests need the same `.env` and the services running.
 
 Before declaring a task done, run `pnpm lint`, `pnpm format:check`, `pnpm typecheck` and the test scripts it affects.
 

@@ -45,15 +45,15 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Done when: suporte (verificação contínua) — um PR de teste executa todos os jobs com sucesso
   Evidence:
 
-- [ ] SPEC-0001-T005 — Configurar Drizzle, migrações e os papéis PostgreSQL `orbi_owner`, `orbi_app` (sem BYPASSRLS) e `orbi_platform`, com script `db:migrate`
-  Status: ready
+- [x] SPEC-0001-T005 — Configurar Drizzle, migrações e os papéis PostgreSQL `orbi_owner`, `orbi_app` (sem BYPASSRLS) e `orbi_platform`, com script `db:migrate`
+  Status: completed
   Requirements: REQ-061
   Depends on: SPEC-0001-T003
   Done when: migração inicial aplica num banco vazio; `orbi_app` não é dono de tabelas nem tem BYPASSRLS (verificado por consulta em teste)
-  Evidence:
+  Evidence: 2026-11-05 — drizzle-orm 0.45.4 + drizzle-kit 0.31.11 + pg 8.23.1; `drizzle.config.ts`, `src/server/db/{roles,bootstrap,migrate}.ts`, `drizzle/0000_init.sql` (revoga CREATE em `public` de PUBLIC; função `uuid_generate_v7()`). Papéis criados por `pnpm db:bootstrap` (superusuário via `DATABASE_URL_ADMIN`, idempotente, senhas tiradas das URLs; base pertence a `orbi_owner`; CONNECT só para `orbi_app`/`orbi_platform`); `pnpm db:migrate` recusa outro papel que não `orbi_owner`. `pnpm test:integration` › `tests/integration/db-roles.test.ts` 8/8 numa base vazia criada e apagada a cada execução: os 3 papéis sem SUPERUSER/BYPASSRLS/CREATEROLE/CREATEDB; `orbi_app`/`orbi_platform` donos de nenhum objeto (relações, schemas, funções, tipos); base de `orbi_owner`; `orbi_app` sem filiação a papéis e sem CREATE em `public` (42501); migração registrada 1×, idempotente; UUID v7 válido e ordenável. Provas negativas manuais: tabela com dono `orbi_app` é detectada pela consulta; `ALTER ROLE orbi_app BYPASSRLS` é revertido pelo bootstrap. Base `orbi` de dev com bootstrap + migração aplicados. `lint`, `format:check`, `typecheck`, `test` (38), `test:e2e` (4) exit 0. Notas: papéis ficam fora das migrações por serem do servidor inteiro (bootstrap = passo de provisionamento, também em produção); nova variável `DATABASE_URL_ADMIN` (só bootstrap e testes); `package.json` passou a `"type": "module"` (scripts Node em TS nativo); arquivos de `src/server/db` importam com extensão `.ts` (`allowImportingTsExtensions`) para rodar direto no Node.
 
 - [ ] SPEC-0001-T006 — Criar tabela `tenants`, helper `withTenant()` (`set_config('app.tenant_id', …, true)`), política RLS padrão e teste que falha se alguma tabela com `tenant_id` não tiver RLS habilitado e forçado
-  Status: pending
+  Status: ready
   Requirements: REQ-061, REQ-064
   Depends on: SPEC-0001-T005
   Done when: teste de integração cria dados em duas empresas numa tabela de exemplo e prova que cada uma só vê os seus; sem tenant definido, zero linhas; o teste de varredura passa
@@ -67,7 +67,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence: 2026-11-05 — `src/lib/timezone.ts` (`toSaoPauloDate`, `todayInSaoPaulo`, `saoPauloToInstant`, `parsePlainDate`), `src/lib/format.ts` (`formatDate`, `formatDateTime`, `formatCurrency`, `formatNumber`, `parseDecimal`), `src/lib/documents.ts` (`isValidCpf`, `isValidCnpj`, `normalize*`, `format*`). `pnpm test`: 36 testes novos em `tests/unit/{timezone,format,documents}.test.ts` (38/38 no total), também com `TZ=UTC`, `Asia/Tokyo` e `America/Los_Angeles`; cobrem virada de dia 23:59/00:00, horário de verão histórico (2018, UTC−2), data `date` sem deslocamento, R$ com valores `numeric` em texto, vírgula decimal, CPF/CNPJ válidos e inválidos. `pnpm lint`, `format:check`, `typecheck`, `test:integration` exit 0. Notas: CNPJ aceita o formato alfanumérico da Receita (IN RFB 2.229/2024, emitido desde jul/2026; exemplo oficial `12.ABC.345/01DE-35`) e é normalizado em maiúsculas; datas de calendário (`YYYY-MM-DD`) são formatadas sem conversão de fuso; `parseDecimal` recusa "1.5" (ambíguo em pt-BR). Parte unitária de V-005 e V-033; os ACs completos dependem de T020/T027 e das telas.
 
 - [ ] SPEC-0001-T008 — Integrar Better Auth em `src/server/auth` (e-mail/senha, scrypt, cookies seguros, expiração por inatividade, rate limit de login) com `user.tenant_id`, `user.roles` e `user.active`
-  Status: pending
+  Status: ready
   Requirements: REQ-001, REQ-049
   Depends on: SPEC-0001-T005
   Done when: login/logout funcionam; senha só armazenada como hash; sessão expira após o tempo configurado (teste); só `src/server/auth` importa a biblioteca
@@ -283,7 +283,7 @@ Legenda: tarefas sem requisito (`Requirements: none`) são de suporte; o motivo 
   Evidence:
 
 - [ ] SPEC-0001-T038 — Criar o processo `worker.ts` com pg-boss e a imagem do worker com Chromium e poppler
-  Status: pending
+  Status: ready
   Requirements: REQ-017
   Depends on: SPEC-0001-T003, SPEC-0001-T005
   Done when: worker sobe no compose dev, processa um job de teste e reporta saúde

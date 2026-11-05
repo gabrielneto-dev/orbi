@@ -2,6 +2,7 @@
   "name": "orbi",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=24 <25"
   },
@@ -17,13 +18,18 @@
     "test:integration": "vitest run --project integration",
     "test:e2e": "playwright test",
     "services:up": "docker compose --env-file .env -f docker/compose.dev.yml up -d --wait postgres minio && docker compose --env-file .env -f docker/compose.dev.yml up minio-init",
-    "services:down": "docker compose --env-file .env -f docker/compose.dev.yml down"
+    "services:down": "docker compose --env-file .env -f docker/compose.dev.yml down",
+    "db:bootstrap": "node --env-file-if-exists=.env scripts/db-bootstrap.mts",
+    "db:migrate": "node --env-file-if-exists=.env scripts/db-migrate.mts",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
+    "drizzle-orm": "^0.45.4",
     "lucide-react": "^1.68.0",
     "next": "16.4.5",
+    "pg": "^8.23.1",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
@@ -32,8 +38,10 @@
     "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^10.14.0",
     "eslint-config-next": "16.4.5",
     "eslint-config-prettier": "^10.1.8",
